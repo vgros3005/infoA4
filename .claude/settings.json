@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(php --version)",
+      "PowerShell(composer --version)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(Set-Location \"c:\\\\laragon\\\\www\\\\infoA4\"; php artisan l5-swagger:generate --all 2>&1; $ok = $LASTEXITCODE; Write-Host \"Exit: $ok\"; Test-Path \"storage\\\\api-docs\\\\api-docs.json\")",
+      "PowerShell(Set-Location \"c:\\\\laragon\\\\www\\\\infoA4\"; Start-Job -ScriptBlock { Set-Location \"c:\\\\laragon\\\\www\\\\infoA4\"; php artisan serve --port=8099 } | Out-Null; Start-Sleep -Seconds 4; Invoke-WebRequest -Uri \"http://localhost:8099/login\" -UseBasicParsing -TimeoutSec 10 | Select-Object StatusCode, @{N='HasAdminLTE';E={$_.Content -match 'app-wrapper'}})"
+    ]
+  }
+}

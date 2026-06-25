@@ -1,0 +1,428 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Gestion Fiches A4 - API",
+        "description": "API REST pour la gestion et le suivi des fiches A4 (demandes de développement DSI)",
+        "contact": {
+            "email": "admin@infoa4.local"
+        },
+        "license": {
+            "name": "Propriétaire"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API principale"
+        }
+    ],
+    "paths": {
+        "/api/priorities/{id}/requires-justification": {
+            "get": {
+                "tags": [
+                    "Priorities"
+                ],
+                "summary": "Check whether the given priority requires a textual justification",
+                "operationId": "apiPriorityRequiresJustification",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Priority ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Justification requirement flag",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "requires_justification": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Priority not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/requests": {
+            "get": {
+                "tags": [
+                    "Requests"
+                ],
+                "summary": "List requests A4 with optional filters",
+                "operationId": "apiRequestIndex",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Full-text search on title, reference or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status_id",
+                        "in": "query",
+                        "description": "Filter by status ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "request_type_id",
+                        "in": "query",
+                        "description": "Filter by request type ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "priority_id",
+                        "in": "query",
+                        "description": "Filter by priority ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Filter requests from this date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Filter requests up to this date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page (default 20, max 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "last_page": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/requests/{id}": {
+            "get": {
+                "tags": [
+                    "Requests"
+                ],
+                "summary": "Get a single request A4 by ID",
+                "operationId": "apiRequestShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Request A4 ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tasks/gantt-data": {
+            "get": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Return tasks formatted for Frappe Gantt chart",
+                "operationId": "apiTaskGanttData",
+                "parameters": [
+                    {
+                        "name": "request_a4_id",
+                        "in": "query",
+                        "description": "Filter tasks by request A4 ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filter tasks by assigned user ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of Frappe Gantt task objects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "Task ID as string",
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "description": "Task title",
+                                                "type": "string"
+                                            },
+                                            "start": {
+                                                "description": "Start date YYYY-MM-DD",
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "end": {
+                                                "description": "End date YYYY-MM-DD",
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "progress": {
+                                                "description": "Completion percentage 0-100",
+                                                "type": "number"
+                                            },
+                                            "dependencies": {
+                                                "description": "Comma-separated dependency IDs",
+                                                "type": "string"
+                                            },
+                                            "custom_class": {
+                                                "description": "CSS class based on task status",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tasks/by-user/{userId}": {
+            "get": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Return all active tasks assigned to a specific user",
+                "operationId": "apiTasksByUser",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of tasks for the user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "start_date": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "end_date": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "estimated_hours": {
+                                                "type": "number"
+                                            },
+                                            "actual_hours": {
+                                                "type": "number"
+                                            },
+                                            "progress": {
+                                                "type": "number"
+                                            },
+                                            "request_a4": {
+                                                "type": "object",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Priorities",
+            "description": "Priorities"
+        },
+        {
+            "name": "Requests",
+            "description": "Requests"
+        },
+        {
+            "name": "Tasks",
+            "description": "Tasks"
+        }
+    ]
+}

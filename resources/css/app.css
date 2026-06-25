@@ -1,0 +1,44 @@
+/* OverlayScrollbars (requis par AdminLTE 4) */
+@import '~overlayscrollbars/styles/overlayscrollbars.css';
+
+/* Bootstrap 5 */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+/* Bootstrap Icons */
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+/* AdminLTE 4 */
+@import '~admin-lte/dist/css/adminlte.min.css';
+
+/* Frappe Gantt */
+@import '~frappe-gantt/dist/frappe-gantt.css';
+
+/* Personnalisations */
+:root {
+    --infoA4-primary: #0d6efd;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+.gantt-container {
+    overflow-x: auto;
+}
+
+.task-card {
+    transition: box-shadow 0.2s;
+}
+.task-card:hover {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+.priority-urgent { color: #dc3545; }
+.priority-high   { color: #fd7e14; }
+.priority-medium { color: #ffc107; }
+.priority-low    { color: #198754; }
+
+.wysiwyg-container .tox-tinymce {
+    border-radius: .375rem;
+}
