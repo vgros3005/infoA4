@@ -60,7 +60,7 @@ class TaskApiController extends Controller
         $this->authorize('viewAny', Task::class);
 
         $oQuery = Task::with('dependencies')
-            ->scopeForGantt(Task::query())
+            ->forGantt()
             ->whereNull('deleted_at');
 
         if ($iRequestId = $oHttpRequest->input('request_a4_id')) {
@@ -151,5 +151,40 @@ class TaskApiController extends Controller
             ]);
 
         return response()->json($oTasks);
+    }
+
+    /**
+     * Update start and end dates of a task (called from Gantt drag).
+     */
+    public function updateDates(Request $oHttpRequest, int $iId): JsonResponse
+    {
+        $oTask = Task::findOrFail($iId);
+        $this->authorize('update', $oTask);
+
+        $aValidated = $oHttpRequest->validate([
+            'start_date' => ['required', 'date'],
+            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
+        ]);
+
+        $oTask->update($aValidated);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /**
+     * Update the progress percentage of a task (called from Gantt progress bar).
+     */
+    public function updateProgress(Request $oHttpRequest, int $iId): JsonResponse
+    {
+        $oTask = Task::findOrFail($iId);
+        $this->authorize('update', $oTask);
+
+        $aValidated = $oHttpRequest->validate([
+            'progress' => ['required', 'integer', 'min:0', 'max:100'],
+        ]);
+
+        $oTask->update($aValidated);
+
+        return response()->json(['ok' => true]);
     }
 }

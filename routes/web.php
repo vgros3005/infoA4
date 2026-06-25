@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PriorityAdminController;
 use App\Http\Controllers\Admin\CompanyAdminController;
 use App\Http\Controllers\Admin\SoftwareAdminController;
 use App\Http\Controllers\Admin\LogAdminController;
+use App\Http\Controllers\Api\TaskApiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TinyMceController;
 use Illuminate\Support\Facades\Route;
@@ -92,6 +93,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // TinyMCE image upload
     Route::post('/tinymce/upload', [TinyMceController::class, 'upload'])->name('tinymce.upload');
+
+    // JSON/Ajax endpoints (Gantt, etc.) — session auth, no Sanctum token needed
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('/tasks/gantt-data',          [TaskApiController::class, 'ganttData'])->name('tasks.gantt-data');
+        Route::get('/tasks/by-user/{userId}',    [TaskApiController::class, 'byUser'])->name('tasks.by-user');
+        Route::patch('/tasks/{id}/dates',        [TaskApiController::class, 'updateDates'])->name('tasks.update-dates');
+        Route::patch('/tasks/{id}/progress',     [TaskApiController::class, 'updateProgress'])->name('tasks.update-progress');
+    });
 
     // Profile
     Route::prefix('profile')->name('profile.')->group(function () {
