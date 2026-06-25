@@ -19,12 +19,10 @@ class DashboardController extends Controller
         /** @var \App\Models\User $oUser */
         $oUser = $oHttpRequest->user();
 
-        // Counts by status
+        // Counts by status — keep full objects so the view can use translated_label
         $aByStatus = Status::withCount(['requestsA4' => fn($q) => $q->whereNull('deleted_at')])
             ->orderBy('sort_order')
-            ->get()
-            ->pluck('requests_a4_count', 'name')
-            ->toArray();
+            ->get();
 
         $iTotalRequests   = RequestA4::whereNull('deleted_at')->count();
         $iOpenRequests    = RequestA4::whereHas('status', fn($q) => $q->where('is_final', false))

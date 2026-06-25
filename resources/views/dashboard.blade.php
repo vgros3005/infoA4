@@ -83,17 +83,18 @@
                 </h5>
             </div>
             <div class="card-body">
-                @if(!empty($aStats['by_status']))
-                    @foreach($aStats['by_status'] as $sStatusName => $iCount)
-                        @php $nMax = max(array_values($aStats['by_status'])); $nPct = $nMax > 0 ? round($iCount / $nMax * 100) : 0; @endphp
+                @if($aStats['by_status']->isNotEmpty())
+                    @php $nMax = $aStats['by_status']->max('requests_a4_count') ?: 1; @endphp
+                    @foreach($aStats['by_status'] as $oStatus)
+                        @php $nPct = round($oStatus->requests_a4_count / $nMax * 100); @endphp
                         <div class="mb-3">
                             <div class="d-flex justify-content-between mb-1">
-                                <span class="small fw-medium">{{ $sStatusName }}</span>
-                                <span class="small text-muted">{{ $iCount }}</span>
+                                <span class="small fw-medium">{{ $oStatus->translated_label }}</span>
+                                <span class="small text-muted">{{ $oStatus->requests_a4_count }}</span>
                             </div>
                             <div class="progress" style="height: 18px;">
-                                <div class="progress-bar bg-primary" role="progressbar"
-                                     style="width: {{ $nPct }}%"
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {{ $nPct }}%; background-color: {{ $oStatus->color ?? '#0d6efd' }};"
                                      aria-valuenow="{{ $nPct }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
