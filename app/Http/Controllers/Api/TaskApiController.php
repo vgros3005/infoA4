@@ -59,7 +59,7 @@ class TaskApiController extends Controller
     {
         $this->authorize('viewAny', Task::class);
 
-        $oQuery = Task::with('dependencies')
+        $oQuery = Task::with(['dependencies', 'taskType'])
             ->forGantt()
             ->whereNull('deleted_at');
 
@@ -79,14 +79,17 @@ class TaskApiController extends Controller
                 ->map(fn($iId) => (string) $iId)
                 ->implode(',');
 
+            $sTypeName = $oTask->taskType?->name ?? 'Autre';
+
             return [
-                'id'           => (string) $oTask->id,
-                'name'         => $oTask->title,
-                'start'        => $oTask->start_date?->toDateString() ?? now()->toDateString(),
-                'end'          => $oTask->end_date?->toDateString()   ?? now()->addDay()->toDateString(),
-                'progress'     => (float) ($oTask->progress ?? 0),
-                'dependencies' => $sDependencies,
-                'custom_class' => 'task-status-' . ($oTask->status ?? 'pending'),
+                'id'            => (string) $oTask->id,
+                'name'          => $oTask->title,
+                'start'         => $oTask->start_date?->toDateString() ?? now()->toDateString(),
+                'end'           => $oTask->end_date?->toDateString()   ?? now()->addDay()->toDateString(),
+                'progress'      => (float) ($oTask->progress ?? 0),
+                'dependencies'  => $sDependencies,
+                'task_type_name'=> $sTypeName,
+                'custom_class'  => 'task-type-' . \Illuminate\Support\Str::slug($sTypeName),
             ];
         });
 

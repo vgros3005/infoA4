@@ -36,9 +36,14 @@
     border-radius: 3px;
     flex-shrink: 0;
 }
-.gantt .bar-progress { fill: #0d6efd; }
 .gantt .bar { fill: #e9ecef; }
 .gantt .bar-label { fill: #212529; font-size: 11px; }
+/* Couleurs par type de tâche (custom_class sur la barre) */
+.gantt .bar-wrapper.task-type-developpement .bar-progress { fill: #0d6efd; }
+.gantt .bar-wrapper.task-type-tests          .bar-progress { fill: #198754; }
+.gantt .bar-wrapper.task-type-analyse        .bar-progress { fill: #ffc107; }
+.gantt .bar-wrapper.task-type-support        .bar-progress { fill: #dc3545; }
+.gantt .bar-wrapper                          .bar-progress { fill: #6c757d; }
 </style>
 @endpush
 
@@ -196,15 +201,15 @@ async function loadGantt(sViewMode) {
             return;
         }
 
-        // Convertir en format Frappe Gantt
+        // L'API renvoie déjà id/name/start/end/progress/dependencies/custom_class
         const aGanttTasks = aTasks.map(oTask => ({
-            id: String(oTask.id),
-            name: oTask.title,
-            start: oTask.start_date,
-            end: oTask.end_date,
-            progress: oTask.progress ?? 0,
+            id:           oTask.id,
+            name:         oTask.name,
+            start:        oTask.start,
+            end:          oTask.end,
+            progress:     oTask.progress ?? 0,
             dependencies: oTask.dependencies ?? '',
-            custom_class: 'task-type-' + (oTask.task_type ?? 'other').toLowerCase().replace(/\s+/g, '-'),
+            custom_class: oTask.custom_class ?? '',
         }));
 
         elContainer.style.display = 'block';
