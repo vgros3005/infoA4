@@ -55,14 +55,22 @@ class TimeEntryController extends Controller
             $oQuery->where('task_id', $iTaskId);
         }
 
-        $oEntries = $oQuery->orderByDesc('entry_date')->paginate(25)->withQueryString();
+        $oEntries    = $oQuery->orderByDesc('entry_date')->paginate(25)->withQueryString();
         $nTotalHours = $oQuery->sum('hours');
 
         $oUsers = $oCurrentUser->isAdmin()
             ? User::where('is_active', true)->orderBy('name')->get()
             : collect([$oCurrentUser]);
 
-        return view('time-entries.index', compact('oEntries', 'nTotalHours', 'oUsers'));
+        // Tâches de l'utilisateur courant pour le formulaire de saisie rapide
+        $aMyTasks = Task::with('requestA4')
+            ->where('assigned_to', $oCurrentUser->id)
+            ->whereNotIn('status', ['done', 'cancelled'])
+            ->whereNull('deleted_at')
+            ->orderBy('end_date')
+            ->get();
+
+        return view('time-entries.index', compact('oEntries', 'nTotalHours', 'oUsers', 'aMyTasks'));
     }
 
     /**
