@@ -275,6 +275,17 @@
                         <i class="bi bi-exclamation-triangle me-2"></i>{{ session('warning') }}
                     </div>
                 @endif
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <strong><i class="bi bi-exclamation-circle me-2"></i>{{ __('Veuillez corriger les erreurs suivantes') }} :</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach($errors->all() as $sError)
+                                <li>{{ $sError }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 @yield('content')
             </div>
