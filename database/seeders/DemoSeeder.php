@@ -32,10 +32,11 @@ class DemoSeeder extends Seeder
     private function seedCompanies(): void
     {
         $aCompanies = [
-            ['name' => 'Acme Corporation', 'code' => 'ACME', 'contact_email' => 'contact@acme.fr'],
-            ['name' => 'TechSolutions SAS', 'code' => 'TECH', 'contact_email' => 'info@techsolutions.fr'],
-            ['name' => 'Groupe Industrie', 'code' => 'GRIND', 'contact_email' => 'dsi@groupe-industrie.fr'],
-            ['name' => 'StartUp Digital', 'code' => 'STUP', 'contact_email' => 'tech@startup-digital.fr'],
+            ['name' => "FABRICATION D'APPLICATIONS ET DE REALISATIONS ELECTRONIQUES", 'code' => 'FARE', 'contact_email' => 'contact@fare.fr'],
+            ['name' => 'SEFI', 'code' => 'SEFI', 'contact_email' => 'contact@sefi.fr'],
+            ['name' => 'INTTEK', 'code' => 'INTTEK', 'contact_email' => 'antoine.talbot@inttek.fr'],
+            ['name' => 'LA DETECTION ELECTRONIQUE FRANCAISE', 'code' => 'DEF', 'contact_email' => 'valentin.lecuyer@reseau-def.com'],
+            ['name' => 'ALPHA SECURITE DISTRIBUTION', 'code' => 'ASD', 'contact_email' => 'jerrome.collet@asd-incendie.fr'],
         ];
         foreach ($aCompanies as $aCompany) {
             Company::updateOrCreate(['code' => $aCompany['code']], $aCompany);
@@ -45,10 +46,10 @@ class DemoSeeder extends Seeder
     private function seedSoftwares(): void
     {
         $aSoftwares = [
-            ['name' => 'ERP Principal', 'code' => 'ERP', 'vendor' => 'SAP', 'version' => '2024.1'],
-            ['name' => 'CRM Client', 'code' => 'CRM', 'vendor' => 'Salesforce', 'version' => '45.0'],
-            ['name' => 'Portail RH', 'code' => 'RH', 'vendor' => 'Interne', 'version' => '3.2'],
-            ['name' => 'Facturation', 'code' => 'FACT', 'vendor' => 'Interne', 'version' => '2.1'],
+            ['name' => 'IFS V9', 'code' => 'V9', 'vendor' => 'IFS', 'version' => '9'],
+            ['name' => 'CRM Client', 'code' => 'CRM', 'vendor' => 'Salesforce', 'version' => 'xxx'],
+            ['name' => 'IFS 10', 'code' => 'V10', 'vendor' => 'IFS', 'version' => '10 Upd 23'],
+            ['name' => 'BOOMI', 'code' => 'FACT', 'vendor' => 'Boomi', 'version' => 'xx'],
             ['name' => 'Reporting BI', 'code' => 'BI', 'vendor' => 'Power BI', 'version' => 'Latest'],
         ];
         foreach ($aSoftwares as $aSoftware) {
@@ -85,7 +86,7 @@ class DemoSeeder extends Seeder
             );
         }
 
-        $oTeamDev  = Team::updateOrCreate(['name' => 'Équipe Développement'], ['color' => 'primary', 'description' => 'Équipe de développement applicatif']);
+        $oTeamDev  = Team::updateOrCreate(['name' => 'Équipe Développement IFS'], ['color' => 'primary', 'description' => 'Équipe de développement IFS']);
         $oTeamTest = Team::updateOrCreate(['name' => 'Équipe QA / Tests'], ['color' => 'warning', 'description' => 'Équipe assurance qualité']);
         $oTeamMOA  = Team::updateOrCreate(['name' => 'MOA / Métier'], ['color' => 'success', 'description' => 'Maîtrise d\'ouvrage']);
 
