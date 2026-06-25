@@ -38,12 +38,14 @@
 }
 .gantt .bar { fill: #e9ecef; }
 .gantt .bar-label { fill: #212529; font-size: 11px; }
-/* Couleurs par type de tâche (custom_class sur la barre) */
-.gantt .bar-wrapper.task-type-developpement .bar-progress { fill: #0d6efd; }
-.gantt .bar-wrapper.task-type-tests          .bar-progress { fill: #198754; }
-.gantt .bar-wrapper.task-type-analyse        .bar-progress { fill: #ffc107; }
-.gantt .bar-wrapper.task-type-support        .bar-progress { fill: #dc3545; }
-.gantt .bar-wrapper                          .bar-progress { fill: #6c757d; }
+/* Couleurs par type de tâche — noms issus de TaskTypeSeeder (name = slug) */
+.gantt .bar-wrapper.task-type-development   .bar-progress { fill: #0d6efd !important; }
+.gantt .bar-wrapper.task-type-testing       .bar-progress { fill: #ffc107 !important; }
+.gantt .bar-wrapper.task-type-analysis      .bar-progress { fill: #0dcaf0 !important; }
+.gantt .bar-wrapper.task-type-support       .bar-progress { fill: #dc3545 !important; }
+.gantt .bar-wrapper.task-type-deployment    .bar-progress { fill: #198754 !important; }
+.gantt .bar-wrapper.task-type-documentation .bar-progress { fill: #6c757d !important; }
+.gantt .bar-wrapper.task-type-meeting       .bar-progress { fill: #6f42c1 !important; }
 </style>
 @endpush
 
@@ -133,11 +135,11 @@
                 <span>{{ __('Développement') }}</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #198754;"></div>
+                <div class="legend-color" style="background-color: #ffc107;"></div>
                 <span>{{ __('Tests') }}</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #ffc107;"></div>
+                <div class="legend-color" style="background-color: #0dcaf0;"></div>
                 <span>{{ __('Analyse') }}</span>
             </div>
             <div class="legend-item">
@@ -145,8 +147,16 @@
                 <span>{{ __('Support') }}</span>
             </div>
             <div class="legend-item">
+                <div class="legend-color" style="background-color: #198754;"></div>
+                <span>{{ __('Déploiement') }}</span>
+            </div>
+            <div class="legend-item">
                 <div class="legend-color" style="background-color: #6c757d;"></div>
-                <span>{{ __('Autre') }}</span>
+                <span>{{ __('Documentation') }}</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #6f42c1;"></div>
+                <span>{{ __('Réunion') }}</span>
             </div>
         </div>
     </div>

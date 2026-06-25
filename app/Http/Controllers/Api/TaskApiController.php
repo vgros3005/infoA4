@@ -79,17 +79,16 @@ class TaskApiController extends Controller
                 ->map(fn($iId) => (string) $iId)
                 ->implode(',');
 
-            $sTypeName = $oTask->taskType?->name ?? 'Autre';
+            $sTypeSlug = $oTask->taskType?->name ?? 'other';
 
             return [
-                'id'            => (string) $oTask->id,
-                'name'          => $oTask->title,
-                'start'         => $oTask->start_date?->toDateString() ?? now()->toDateString(),
-                'end'           => $oTask->end_date?->toDateString()   ?? now()->addDay()->toDateString(),
-                'progress'      => (float) ($oTask->progress ?? 0),
-                'dependencies'  => $sDependencies,
-                'task_type_name'=> $sTypeName,
-                'custom_class'  => 'task-type-' . \Illuminate\Support\Str::slug($sTypeName),
+                'id'           => (string) $oTask->id,
+                'name'         => $oTask->title,
+                'start'        => $oTask->start_date?->toDateString() ?? now()->toDateString(),
+                'end'          => $oTask->end_date?->toDateString()   ?? now()->addDay()->toDateString(),
+                'progress'     => (float) ($oTask->progress ?? 0),
+                'dependencies' => $sDependencies,
+                'custom_class' => 'task-type-' . $sTypeSlug,
             ];
         });
 
