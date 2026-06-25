@@ -157,7 +157,7 @@
                                 <th>{{ __('Fiche A4') }}</th>
                                 <th class="text-end">{{ __('Heures') }}</th>
                                 <th>{{ __('Commentaire') }}</th>
-                                <th class="text-end pe-3">{{ __('Actions') }}</th>
+                                <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

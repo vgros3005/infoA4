@@ -74,7 +74,7 @@
                                 <th class="ps-3">{{ __('Membre') }}</th>
                                 <th>{{ __('Email') }}</th>
                                 <th>{{ __('Rôle') }}</th>
-                                <th class="text-end pe-3">{{ __('Actions') }}</th>
+                                <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -27,7 +27,7 @@
                         <th>{{ __('Niveau') }}</th>
                         <th>{{ __('Justification requise') }}</th>
                         <th>{{ __('Demandes') }}</th>
-                        <th class="text-end pe-3">{{ __('Actions') }}</th>
+                        <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -69,7 +69,7 @@
                                         <th>{{ __('Statut cible') }}</th>
                                         <th>{{ __('Rôles autorisés') }}</th>
                                         <th>{{ __('Commentaire') }}</th>
-                                        <th class="text-end">{{ __('Actions') }}</th>
+                                        <th class="text-end">{{ __('ui.actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

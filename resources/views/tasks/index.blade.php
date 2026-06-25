@@ -90,7 +90,7 @@
                         <th>{{ __('Début') }}</th>
                         <th>{{ __('Fin') }}</th>
                         <th>{{ __('Statut') }}</th>
-                        <th class="text-end pe-3">{{ __('Actions') }}</th>
+                        <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>

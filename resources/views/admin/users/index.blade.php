@@ -65,7 +65,7 @@
                         <th>{{ __('Équipes / Rôles') }}</th>
                         <th>{{ __('Statut') }}</th>
                         <th>{{ __('Créé le') }}</th>
-                        <th class="text-end pe-3">{{ __('Actions') }}</th>
+                        <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -25,7 +25,7 @@
                         <th class="ps-3">{{ __('Nom') }}</th>
                         <th>{{ __('Code') }}</th>
                         <th>{{ __('Demandes') }}</th>
-                        <th class="text-end pe-3">{{ __('Actions') }}</th>
+                        <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>

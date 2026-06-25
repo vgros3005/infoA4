@@ -382,7 +382,7 @@
                             <th>{{ __('Date') }}</th>
                             <th>{{ __('Généré par') }}</th>
                             <th>{{ __('Statut au moment') }}</th>
-                            <th class="text-end pe-3">{{ __('Actions') }}</th>
+                            <th class="text-end pe-3">{{ __('ui.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
