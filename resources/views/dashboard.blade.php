@@ -181,12 +181,12 @@
                             <td class="fw-medium">{{ Str::limit($oRequest->title, 40) }}</td>
                             <td><span class="text-muted small">{{ $oRequest->requestType->name ?? '—' }}</span></td>
                             <td>
-                                <span class="badge" style="background-color: {{ $oRequest->priority->color ?? '#6c757d' }}">
+                                <span class="badge" style="background-color: var(--bs-{{ $oRequest->priority->color ?? 'secondary' }})">
                                     {{ $oRequest->priority->name ?? '—' }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge" style="background-color: {{ $oRequest->status->color ?? '#6c757d' }}">
+                                <span class="badge" style="background-color: var(--bs-{{ $oRequest->status->color ?? 'secondary' }})">
                                     {{ $oRequest->status->translated_label ?? '—' }}
                                 </span>
                             </td>

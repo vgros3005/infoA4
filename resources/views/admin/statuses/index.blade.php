@@ -23,7 +23,7 @@
                 <div class="card-header bg-transparent border-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle" style="width: 16px; height: 16px; background-color: {{ $oStatus->color ?? '#6c757d' }};"></div>
+                            <div class="rounded-circle" style="width: 16px; height: 16px; background-color: var(--bs-{{ $oStatus->color ?? 'secondary' }});"></div>
                             <h5 class="mb-0 fw-bold">{{ $oStatus->name }}</h5>
                             <span class="badge bg-light text-dark border">{{ __('Ordre') }} {{ $oStatus->order ?? '—' }}</span>
                             @if($oStatus->is_final ?? false)
@@ -80,7 +80,7 @@
                                             </td>
                                             <td>
                                                 @if($oAction->targetStatus)
-                                                    <span class="badge" style="background-color: {{ $oAction->targetStatus->color ?? '#6c757d' }}">
+                                                    <span class="badge" style="background-color: var(--bs-{{ $oAction->targetStatus->color ?? 'secondary' }})">
                                                         {{ $oAction->targetStatus->name }}
                                                     </span>
                                                 @else

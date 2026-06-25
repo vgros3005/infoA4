@@ -34,13 +34,13 @@
                     @forelse($aPriorities as $oPriority)
                         <tr>
                             <td class="ps-3">
-                                <span class="badge rounded-pill fs-6 px-3" style="background-color: {{ $oPriority->color ?? '#6c757d' }};">
+                                <span class="badge rounded-pill fs-6 px-3" style="background-color: var(--bs-{{ $oPriority->color ?? 'secondary' }});">
                                     {{ $oPriority->name }}
                                 </span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded border" style="width: 20px; height: 20px; background-color: {{ $oPriority->color ?? '#6c757d' }};"></div>
+                                    <div class="rounded border" style="width: 20px; height: 20px; background-color: var(--bs-{{ $oPriority->color ?? 'secondary' }});"></div>
                                     <code class="small">{{ $oPriority->color ?? '—' }}</code>
                                 </div>
                             </td>

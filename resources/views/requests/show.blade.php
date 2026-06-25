@@ -16,11 +16,11 @@
             <div>
                 <h4 class="mb-1 fw-bold">{{ $oRequest->title }}</h4>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <span class="badge rounded-pill" style="background-color: {{ $oRequest->status->color ?? '#6c757d' }}; font-size: 0.85rem;">
+                    <span class="badge rounded-pill" style="background-color: var(--bs-{{ $oRequest->status->color ?? 'secondary' }}); font-size: 0.85rem;">
                         <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>
                         {{ $oRequest->status->translated_label ?? '—' }}
                     </span>
-                    <span class="badge rounded-pill" style="background-color: {{ $oRequest->priority->color ?? '#adb5bd' }}">
+                    <span class="badge rounded-pill" style="background-color: var(--bs-{{ $oRequest->priority->color ?? 'secondary' }})">
                         {{ $oRequest->priority->name ?? '—' }}
                     </span>
                     <span class="badge bg-light text-dark border">{{ $oRequest->requestType->name ?? '—' }}</span>
@@ -204,8 +204,8 @@
                     <div class="d-flex mb-3">
                         <div class="flex-shrink-0 me-3">
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width: 36px; height: 36px; background-color: {{ $oHistory->newStatus->color ?? '#6c757d' }}20; border: 2px solid {{ $oHistory->newStatus->color ?? '#6c757d' }};">
-                                <i class="bi bi-arrow-right small" style="color: {{ $oHistory->newStatus->color ?? '#6c757d' }};"></i>
+                                 style="width: 36px; height: 36px; background-color: rgba(var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }}-rgb), 0.12); border: 2px solid var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }});">
+                                <i class="bi bi-arrow-right small" style="color: var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }});"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1">
@@ -213,7 +213,7 @@
                                 <div>
                                     <span class="fw-medium small">{{ $oHistory->user->full_name ?? '—' }}</span>
                                     <span class="text-muted small mx-2">→</span>
-                                    <span class="badge" style="background-color: {{ $oHistory->newStatus->color ?? '#6c757d' }}">
+                                    <span class="badge" style="background-color: var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }})">
                                         {{ $oHistory->newStatus->translated_label ?? '—' }}
                                     </span>
                                     @if($oHistory->oldStatus)

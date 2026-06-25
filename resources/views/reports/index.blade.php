@@ -54,7 +54,7 @@
                         <div class="col-12 col-md-6 col-lg-4">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="fw-medium small">
-                                    <span class="badge me-1" style="background-color: {{ $oStatus->color ?? '#6c757d' }}; font-size: 0.6rem;">&nbsp;</span>
+                                    <span class="badge me-1" style="background-color: var(--bs-{{ $oStatus->color ?? 'secondary' }}); font-size: 0.6rem;">&nbsp;</span>
                                     {{ $oStatus->translated_label }}
                                 </span>
                                 <span class="fw-bold">{{ $oStatus->requests_count }}</span>
@@ -62,7 +62,7 @@
                             <div class="progress" style="height: 10px;">
                                 @php $nPct = $aStats['total'] > 0 ? round($oStatus->requests_count / $aStats['total'] * 100) : 0; @endphp
                                 <div class="progress-bar" role="progressbar"
-                                     style="width: {{ $nPct }}%; background-color: {{ $oStatus->color ?? '#0d6efd' }};"
+                                     style="width: {{ $nPct }}%; background-color: var(--bs-{{ $oStatus->color ?? 'primary' }});"
                                      aria-valuenow="{{ $nPct }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                 <span class="ms-2 small fw-medium">{{ Str::limit($oRequest->title, 35) }}</span>
                             </a>
                             <div>
-                                <span class="badge" style="background-color: {{ $oRequest->status->color ?? '#6c757d' }}; font-size: 0.65rem;">
+                                <span class="badge" style="background-color: var(--bs-{{ $oRequest->status->color ?? 'secondary' }}); font-size: 0.65rem;">
                                     {{ $oRequest->status->translated_label ?? '—' }}
                                 </span>
                             </div>
@@ -204,12 +204,12 @@
                             </td>
                             <td><span class="small">{{ Str::limit($oReq->title, 45) }}</span></td>
                             <td>
-                                <span class="badge" style="background-color: {{ $oReq->status->color ?? '#6c757d' }}">
+                                <span class="badge" style="background-color: var(--bs-{{ $oReq->status->color ?? 'secondary' }})">
                                     {{ $oReq->status->translated_label ?? '—' }}
                                 </span>
                             </td>
                             <td>
-                                <span class="badge" style="background-color: {{ $oReq->priority->color ?? '#adb5bd' }}">
+                                <span class="badge" style="background-color: var(--bs-{{ $oReq->priority->color ?? 'secondary' }})">
                                     {{ $oReq->priority->name ?? '—' }}
                                 </span>
                             </td>
