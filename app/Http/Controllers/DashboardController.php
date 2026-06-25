@@ -30,10 +30,17 @@ class DashboardController extends Controller
         $iDoneRequests    = RequestA4::whereHas('status', fn($q) => $q->where('is_final', true))
             ->whereNull('deleted_at')->count();
 
+        $sToday   = now()->toDateString();
         $aMyTasks = Task::with(['requestA4', 'taskType'])
             ->where('assigned_to', $oUser->id)
-            ->whereIn('status', ['pending', 'in_progress'])
-            ->whereNull('deleted_at')
+            ->whereNotIn('status', ['done', 'cancelled'])
+            ->where(function ($q) use ($sToday) {
+                // Tâches actives aujourd'hui : plage contient aujourd'hui, ou sans dates
+                $q->where(function ($q2) use ($sToday) {
+                    $q2->whereDate('start_date', '<=', $sToday)
+                       ->whereDate('end_date', '>=', $sToday);
+                })->orWhereNull('start_date');
+            })
             ->orderBy('end_date')
             ->limit(10)
             ->get();
