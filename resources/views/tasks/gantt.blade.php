@@ -225,9 +225,27 @@ async function loadGantt(sViewMode) {
         elContainer.style.display = 'block';
         elLoading.style.display = 'none';
 
+        const aColorMap = {
+            'task-type-development':   '#0d6efd',
+            'task-type-testing':       '#ffc107',
+            'task-type-analysis':      '#0dcaf0',
+            'task-type-support':       '#dc3545',
+            'task-type-deployment':    '#198754',
+            'task-type-documentation': '#6c757d',
+            'task-type-meeting':       '#6f42c1',
+        };
+
+        const applyColors = () => {
+            Object.entries(aColorMap).forEach(([sCls, sColor]) => {
+                elContainer.querySelectorAll(`.bar-wrapper.${sCls} .bar-progress`)
+                    .forEach(el => el.setAttribute('fill', sColor));
+            });
+        };
+
         if (oGanttInstance) {
             oGanttInstance.refresh(aGanttTasks);
             oGanttInstance.change_view_mode(sViewMode);
+            setTimeout(applyColors, 50);
         } else {
             oGanttInstance = new Gantt('#gantt-container', aGanttTasks, {
                 view_mode: sViewMode,
@@ -261,6 +279,7 @@ async function loadGantt(sViewMode) {
                     });
                 },
             });
+            setTimeout(applyColors, 50);
         }
     } catch (oError) {
         elLoading.style.display = 'none';

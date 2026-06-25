@@ -155,6 +155,28 @@
                 </div>
             </div>
 
+            {{-- Statut --}}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-flag me-2 text-secondary"></i>{{ __('Statut') }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <select id="status" name="status"
+                            class="form-select @error('status') is-invalid @enderror">
+                        <option value="pending"     {{ old('status', $oTask->status) === 'pending'     ? 'selected' : '' }}>{{ __('task_status.pending') }}</option>
+                        <option value="in_progress" {{ old('status', $oTask->status) === 'in_progress' ? 'selected' : '' }}>{{ __('task_status.in_progress') }}</option>
+                        <option value="on_hold"     {{ old('status', $oTask->status) === 'on_hold'     ? 'selected' : '' }}>{{ __('task_status.on_hold') }}</option>
+                        <option value="done"        {{ old('status', $oTask->status) === 'done'        ? 'selected' : '' }}>{{ __('task_status.done') }}</option>
+                        <option value="cancelled"   {{ old('status', $oTask->status) === 'cancelled'   ? 'selected' : '' }}>{{ __('task_status.cancelled') }}</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-transparent border-0">
                     <h5 class="card-title mb-0">
