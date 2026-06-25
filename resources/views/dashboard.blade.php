@@ -94,7 +94,7 @@
                             </div>
                             <div class="progress" style="height: 18px;">
                                 <div class="progress-bar" role="progressbar"
-                                     style="width: {{ $nPct }}%; background-color: {{ $oStatus->color ?? '#0d6efd' }};"
+                                     style="width: {{ $nPct }}%; background-color: var(--bs-{{ $oStatus->color ?? 'primary' }});"
                                      aria-valuenow="{{ $nPct }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
