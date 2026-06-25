@@ -204,7 +204,7 @@ async function loadGantt(sViewMode) {
             start: oTask.start_date,
             end: oTask.end_date,
             progress: oTask.progress ?? 0,
-            dependencies: (oTask.dependencies ?? []).join(', '),
+            dependencies: oTask.dependencies ?? '',
             custom_class: 'task-type-' + (oTask.task_type ?? 'other').toLowerCase().replace(/\s+/g, '-'),
         }));
 
