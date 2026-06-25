@@ -9,6 +9,7 @@
 @endsection
 
 @push('styles')
+<link rel="stylesheet" href="/css/frappe-gantt.css">
 <style>
 #gantt-wrapper {
     overflow-x: auto;
@@ -148,9 +149,9 @@
 @endsection
 
 @push('scripts')
-<script type="module">
-import Gantt from '/js/frappe-gantt.esm.js';
-
+<script src="/js/frappe-gantt.js"></script>
+<script>
+(function () {
 const sApiUrl = '/api/tasks/gantt-data';
 const iUserId = {{ request('user_id', 'null') }};
 const sDefaultView = '{{ request('view_mode', 'Week') }}';
@@ -261,5 +262,6 @@ document.getElementById('btnViewMonth').addEventListener('click', () => loadGant
 
 // Chargement initial
 loadGantt(sDefaultView);
+})();
 </script>
 @endpush

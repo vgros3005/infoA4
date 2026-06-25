@@ -30,7 +30,7 @@ class StoreTaskRequest extends FormRequest
             'task_type_id'     => ['nullable', 'integer', 'exists:task_types,id'],
             'assigned_to'      => ['nullable', 'integer', 'exists:users,id'],
             'status'           => ['required', Rule::in(['pending', 'in_progress', 'done', 'cancelled', 'on_hold'])],
-            'priority'         => ['nullable', Rule::in(['low', 'medium', 'high', 'critical'])],
+            'priority'         => ['nullable', Rule::in(['low', 'medium', 'high', 'urgent'])],
             'start_date'       => ['nullable', 'date'],
             'end_date'         => ['nullable', 'date', 'after_or_equal:start_date'],
             'estimated_hours'  => ['nullable', 'numeric', 'min:0'],
