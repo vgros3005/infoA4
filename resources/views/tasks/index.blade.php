@@ -114,7 +114,7 @@
                                     <span class="text-muted small">—</span>
                                 @endif
                             </td>
-                            <td><span class="small">{{ $oTask->assignee->full_name ?? '—' }}</span></td>
+                            <td><span class="small">{{ $oTask->assignedUser->full_name ?? '—' }}</span></td>
                             <td>
                                 <span class="badge bg-light text-dark border">{{ $oTask->estimated_hours }}h</span>
                             </td>

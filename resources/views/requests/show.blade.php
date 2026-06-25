@@ -276,7 +276,7 @@
                             <tr>
                                 <td class="ps-3 fw-medium small">{{ $oTask->title }}</td>
                                 <td><span class="text-muted small">{{ $oTask->taskType->name ?? '—' }}</span></td>
-                                <td><span class="small">{{ $oTask->assignee->full_name ?? '—' }}</span></td>
+                                <td><span class="small">{{ $oTask->assignedUser->full_name ?? '—' }}</span></td>
                                 <td><span class="badge bg-light text-dark border">{{ $oTask->estimated_hours }}h</span></td>
                                 <td><span class="badge bg-light text-dark border">{{ $oTask->actual_hours ?? 0 }}h</span></td>
                                 <td style="min-width: 100px;">
