@@ -43,16 +43,18 @@ class StatusActionAdminController extends Controller
         $oStatus = Status::findOrFail($iStatusId);
 
         $aValidated = $oHttpRequest->validate([
-            'action_name'      => ['required', 'string', 'max:100'],
-            'action_label'     => ['required', 'string', 'max:255'],
-            'target_status_id' => ['required', 'integer', 'exists:statuses,id'],
-            'button_color'     => ['nullable', 'string', 'max:20'],
-            'icon'             => ['nullable', 'string', 'max:100'],
-            'requires_comment' => ['boolean'],
-            'is_active'        => ['boolean'],
-            'sort_order'       => ['nullable', 'integer', 'min:0'],
-            'role_ids'         => ['nullable', 'array'],
-            'role_ids.*'       => ['integer', 'exists:roles,id'],
+            'action_name'         => ['required', 'string', 'max:100'],
+            'action_label'        => ['required', 'string', 'max:255'],
+            'target_status_id'    => ['required', 'integer', 'exists:statuses,id'],
+            'button_color'        => ['nullable', 'string', 'max:20'],
+            'icon'                => ['nullable', 'string', 'max:100'],
+            'requires_comment'    => ['boolean'],
+            'requires_assignment' => ['boolean'],
+            'requires_estimation' => ['boolean'],
+            'is_active'           => ['boolean'],
+            'sort_order'          => ['nullable', 'integer', 'min:0'],
+            'role_ids'            => ['nullable', 'array'],
+            'role_ids.*'          => ['integer', 'exists:roles,id'],
         ]);
 
         $aRoleIds = $aValidated['role_ids'] ?? [];
@@ -86,16 +88,18 @@ class StatusActionAdminController extends Controller
         $oAction = StatusAction::findOrFail($iId);
 
         $aValidated = $oHttpRequest->validate([
-            'action_name'      => ['required', 'string', 'max:100'],
-            'action_label'     => ['required', 'string', 'max:255'],
-            'target_status_id' => ['required', 'integer', 'exists:statuses,id'],
-            'button_color'     => ['nullable', 'string', 'max:20'],
-            'icon'             => ['nullable', 'string', 'max:100'],
-            'requires_comment' => ['boolean'],
-            'is_active'        => ['boolean'],
-            'sort_order'       => ['nullable', 'integer', 'min:0'],
-            'role_ids'         => ['nullable', 'array'],
-            'role_ids.*'       => ['integer', 'exists:roles,id'],
+            'action_name'         => ['required', 'string', 'max:100'],
+            'action_label'        => ['required', 'string', 'max:255'],
+            'target_status_id'    => ['required', 'integer', 'exists:statuses,id'],
+            'button_color'        => ['nullable', 'string', 'max:20'],
+            'icon'                => ['nullable', 'string', 'max:100'],
+            'requires_comment'    => ['boolean'],
+            'requires_assignment' => ['boolean'],
+            'requires_estimation' => ['boolean'],
+            'is_active'           => ['boolean'],
+            'sort_order'          => ['nullable', 'integer', 'min:0'],
+            'role_ids'            => ['nullable', 'array'],
+            'role_ids.*'          => ['integer', 'exists:roles,id'],
         ]);
 
         $aRoleIds = $aValidated['role_ids'] ?? [];

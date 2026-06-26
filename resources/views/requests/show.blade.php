@@ -39,12 +39,14 @@
             <div class="d-flex flex-wrap gap-2">
                 {{-- Boutons d'action workflow --}}
                 @foreach($aAvailableActions as $oAction)
-                    <button type="button" class="btn btn-sm btn-primary"
+                    <button type="button" class="btn btn-sm btn-{{ $oAction->button_color ?? 'primary' }}"
                             data-bs-toggle="modal"
                             data-bs-target="#actionModal"
                             data-action-id="{{ $oAction->id }}"
                             data-action-label="{{ $oAction->translated_label }}"
-                            data-comment-required="{{ $oAction->comment_required ? '1' : '0' }}"
+                            data-comment-required="{{ $oAction->requires_comment ? '1' : '0' }}"
+                            data-requires-assignment="{{ $oAction->requires_assignment ? '1' : '0' }}"
+                            data-requires-estimation="{{ $oAction->requires_estimation ? '1' : '0' }}"
                             data-target-status="{{ $oAction->targetStatus->translated_label ?? '' }}">
                         <i class="bi bi-arrow-right-circle me-1"></i>{{ $oAction->translated_label }}
                     </button>
@@ -157,6 +159,19 @@
                                 <dt class="text-muted small fw-normal" style="min-width: 130px;">{{ __('Demandeur') }}</dt>
                                 <dd class="mb-0 small fw-medium">{{ $oRequest->requester->full_name ?? '—' }}</dd>
                             </div>
+                            @if($oRequest->assignedUser || $oRequest->assignedTeam)
+                            <div class="d-flex border-bottom px-3 py-2">
+                                <dt class="text-muted small fw-normal" style="min-width: 130px;">{{ __('Affecté à') }}</dt>
+                                <dd class="mb-0 small">
+                                    @if($oRequest->assignedUser)
+                                        <span class="fw-medium">{{ $oRequest->assignedUser->full_name }}</span>
+                                    @endif
+                                    @if($oRequest->assignedTeam)
+                                        <span class="badge bg-light text-dark border ms-1">{{ $oRequest->assignedTeam->name }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                            @endif
                             <div class="d-flex border-bottom px-3 py-2">
                                 <dt class="text-muted small fw-normal" style="min-width: 130px;">{{ __('Date de demande') }}</dt>
                                 <dd class="mb-0 small">{{ $oRequest->requested_date?->format('d/m/Y') ?? '—' }}</dd>
@@ -426,10 +441,10 @@
 
 {{-- Modal action workflow --}}
 <div class="modal fade" id="actionModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="actionModalTitle">
+                <h5 class="modal-title">
                     <i class="bi bi-arrow-right-circle me-2 text-primary"></i>
                     <span id="actionModalLabel">{{ __('Action') }}</span>
                 </h5>
@@ -440,12 +455,83 @@
                 <input type="hidden" name="action_id" id="actionId">
                 <div class="modal-body">
                     <p class="text-muted small mb-3" id="actionDescription"></p>
-                    <div>
+
+                    {{-- Section Affectation (visible uniquement si requires_assignment) --}}
+                    <div id="sectionAssignment" style="display:none;">
+                        <hr class="my-3">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-person-check me-2 text-indigo"></i>{{ __('Affectation') }}
+                        </h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="assignedUser" class="form-label fw-medium">
+                                    {{ __('Responsable') }} <span class="text-danger">*</span>
+                                </label>
+                                <select id="assignedUser" name="assigned_to_user_id" class="form-select">
+                                    <option value="">{{ __('-- Sélectionner --') }}</option>
+                                    @foreach($aActiveUsers as $oUser)
+                                        <option value="{{ $oUser->id }}"
+                                            {{ $oRequest->assigned_to_user_id == $oUser->id ? 'selected' : '' }}>
+                                            {{ $oUser->full_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="assignedTeam" class="form-label fw-medium">{{ __('Équipe') }}</label>
+                                <select id="assignedTeam" name="assigned_team_id" class="form-select">
+                                    <option value="">{{ __('-- Aucune --') }}</option>
+                                    @foreach($aTeams as $oTeam)
+                                        <option value="{{ $oTeam->id }}"
+                                            {{ $oRequest->assigned_team_id == $oTeam->id ? 'selected' : '' }}>
+                                            {{ $oTeam->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section Chiffrage (visible uniquement si requires_estimation) --}}
+                    <div id="sectionEstimation" style="display:none;">
+                        <hr class="my-3">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-calculator me-2 text-teal"></i>{{ __('Chiffrage') }}
+                        </h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="estimatedHours" class="form-label fw-medium">
+                                    {{ __('Heures estimées') }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" id="estimatedHours" name="estimated_hours"
+                                           class="form-control" min="0" step="0.5"
+                                           value="{{ $oRequest->estimated_hours }}">
+                                    <span class="input-group-text">h</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="plannedDate" class="form-label fw-medium">
+                                    {{ __('Date cible pour les tests') }}
+                                </label>
+                                <input type="date" id="plannedDate" name="planned_date"
+                                       class="form-control"
+                                       value="{{ $oRequest->planned_date?->format('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="alert alert-info py-2 small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            {{ __('Après validation du chiffrage, les tâches détaillées pourront être créées depuis l\'onglet Tâches.') }}
+                        </div>
+                    </div>
+
+                    {{-- Commentaire --}}
+                    <div class="mt-3">
                         <label for="actionComment" class="form-label fw-medium">
                             {{ __('Commentaire') }}
-                            <span id="commentRequiredMark" class="text-danger" style="display: none;">*</span>
+                            <span id="commentRequiredMark" class="text-danger" style="display:none;">*</span>
                         </label>
-                        <textarea id="actionComment" name="comment" rows="4"
+                        <textarea id="actionComment" name="comment" rows="3"
                                   class="form-control"
                                   placeholder="{{ __('Commentaire sur ce changement de statut…') }}"></textarea>
                     </div>
@@ -474,10 +560,12 @@
 
     elModal.addEventListener('show.bs.modal', function (oEvent) {
         const elTrigger = oEvent.relatedTarget;
-        const sActionId = elTrigger.dataset.actionId;
-        const sActionLabel = elTrigger.dataset.actionLabel;
-        const bCommentRequired = elTrigger.dataset.commentRequired === '1';
-        const sTargetStatus = elTrigger.dataset.targetStatus;
+        const sActionId          = elTrigger.dataset.actionId;
+        const sActionLabel       = elTrigger.dataset.actionLabel;
+        const bCommentRequired   = elTrigger.dataset.commentRequired === '1';
+        const bRequiresAssign    = elTrigger.dataset.requiresAssignment === '1';
+        const bRequiresEstimate  = elTrigger.dataset.requiresEstimation === '1';
+        const sTargetStatus      = elTrigger.dataset.targetStatus;
 
         document.getElementById('actionModalLabel').textContent = sActionLabel;
         document.getElementById('actionId').value = sActionId;
@@ -486,6 +574,16 @@
 
         const elComment = document.getElementById('actionComment');
         elComment.required = bCommentRequired;
+
+        // Show/hide conditional sections
+        const elAssign   = document.getElementById('sectionAssignment');
+        const elEstimate = document.getElementById('sectionEstimation');
+        elAssign.style.display   = bRequiresAssign   ? 'block' : 'none';
+        elEstimate.style.display = bRequiresEstimate ? 'block' : 'none';
+
+        // Required attributes for conditional fields
+        document.getElementById('assignedUser').required    = bRequiresAssign;
+        document.getElementById('estimatedHours').required  = bRequiresEstimate;
 
         if (sTargetStatus) {
             document.getElementById('actionDescription').textContent =

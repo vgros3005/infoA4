@@ -13,14 +13,17 @@ class StatusAction extends Model
 
     protected $fillable = [
         'status_id', 'target_status_id', 'action_label', 'action_name',
-        'button_color', 'icon', 'requires_comment', 'is_active', 'sort_order',
+        'button_color', 'icon', 'requires_comment', 'requires_assignment',
+        'requires_estimation', 'is_active', 'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'requires_comment' => 'boolean',
-            'is_active'        => 'boolean',
+            'requires_comment'    => 'boolean',
+            'requires_assignment' => 'boolean',
+            'requires_estimation' => 'boolean',
+            'is_active'           => 'boolean',
         ];
     }
 

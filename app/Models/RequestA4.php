@@ -19,7 +19,7 @@ class RequestA4 extends Model
     protected $fillable = [
         'reference', 'title', 'description', 'content',
         'request_type_id', 'priority_id', 'priority_justification',
-        'status_id', 'requester_id', 'assigned_team_id',
+        'status_id', 'requester_id', 'assigned_team_id', 'assigned_to_user_id',
         'requested_date', 'desired_date', 'planned_date', 'completed_date',
         'is_frozen', 'pdf_version', 'estimated_hours', 'actual_hours', 'internal_notes',
     ];
@@ -75,6 +75,11 @@ class RequestA4 extends Model
     public function assignedTeam(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'assigned_team_id');
+    }
+
+    public function assignedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to_user_id');
     }
 
     public function companies(): BelongsToMany

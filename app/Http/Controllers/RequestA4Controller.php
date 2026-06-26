@@ -6,6 +6,7 @@ use App\Http\Requests\StoreRequestA4Request;
 use App\Http\Requests\UpdateRequestA4Request;
 use App\Models\ActivityLog;
 use App\Models\Company;
+use App\Models\User;
 use App\Models\Priority;
 use App\Models\RequestA4;
 use App\Models\RequestType;
@@ -231,9 +232,11 @@ class RequestA4Controller extends Controller
             ->sortByDesc('date')
             ->values();
 
-        $oRequest = $oRequestA4; // alias used by the view
+        $oRequest     = $oRequestA4; // alias used by the view
+        $aActiveUsers = User::where('is_active', true)->orderBy('name')->get();
+        $aTeams       = Team::orderBy('name')->get();
 
-        return view('requests.show', compact('oRequest', 'aAvailableActions', 'aActivityJournal'));
+        return view('requests.show', compact('oRequest', 'aAvailableActions', 'aActivityJournal', 'aActiveUsers', 'aTeams'));
     }
 
     /**
@@ -381,11 +384,37 @@ class RequestA4Controller extends Controller
 
         $this->authorize('executeAction', [$oRequestA4, $oAction]);
 
-        $oHttpRequest->validate([
+        $aRules = [
             'comment' => $oAction->requires_comment
                 ? 'required|string|max:1000'
                 : 'nullable|string|max:1000',
-        ]);
+        ];
+
+        if ($oAction->requires_assignment) {
+            $aRules['assigned_to_user_id'] = 'required|exists:users,id';
+            $aRules['assigned_team_id']     = 'nullable|exists:teams,id';
+        }
+
+        if ($oAction->requires_estimation) {
+            $aRules['estimated_hours'] = 'required|numeric|min:0';
+            $aRules['planned_date']    = 'nullable|date';
+        }
+
+        $oHttpRequest->validate($aRules);
+
+        // Persist assignment / estimation fields before transitioning
+        $aExtra = [];
+        if ($oAction->requires_assignment) {
+            $aExtra['assigned_to_user_id'] = $oHttpRequest->input('assigned_to_user_id');
+            $aExtra['assigned_team_id']    = $oHttpRequest->input('assigned_team_id') ?: null;
+        }
+        if ($oAction->requires_estimation) {
+            $aExtra['estimated_hours'] = $oHttpRequest->input('estimated_hours');
+            $aExtra['planned_date']    = $oHttpRequest->input('planned_date') ?: null;
+        }
+        if (!empty($aExtra)) {
+            $oRequestA4->update($aExtra);
+        }
 
         $sComment = $oHttpRequest->input('comment') ?? '';
 
