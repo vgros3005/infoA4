@@ -347,7 +347,7 @@ class RequestA4Controller extends Controller
                 : 'nullable|string|max:1000',
         ]);
 
-        $sComment = $oHttpRequest->input('comment', '');
+        $sComment = $oHttpRequest->input('comment') ?? '';
 
         /** @var \App\Models\User $oUser */
         $oUser = Auth::user();
