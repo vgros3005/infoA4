@@ -16,26 +16,72 @@ class ReportController extends Controller
     /**
      * Display the main reporting dashboard (requests by status, overview metrics).
      *
+     * @param  \Illuminate\Http\Request  $oHttpRequest
      * @return \Illuminate\View\View
      */
-    public function index(): View
+    public function index(Request $oHttpRequest): View
     {
         $this->authorize('viewAny', RequestA4::class);
 
-        // Requests grouped by status
-        $aRequestsByStatus = Status::withCount(['requestsA4' => fn($q) => $q->whereNull('deleted_at')])
+        $sDateFrom = $oHttpRequest->input('date_from', now()->startOfYear()->toDateString());
+        $sDateTo   = $oHttpRequest->input('date_to',   now()->toDateString());
+
+        // --- Répartition par statut (requests_count = alias attendu par la vue) ---
+        $aByStatus = Status::withCount([
+                'requestsA4 as requests_count' => fn($q) => $q->whereNull('deleted_at'),
+            ])
             ->orderBy('sort_order')
             ->get();
 
-        // Requests opened vs. closed per month (last 12 months)
-        $aMonthlyStats = RequestA4::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+        $iTotalRequests = RequestA4::whereNull('deleted_at')->count();
+
+        // --- Fiches en retard (date souhaitée dépassée, statut non final) ---
+        $aOverdue = RequestA4::with(['status', 'priority', 'requester'])
             ->whereNull('deleted_at')
-            ->where('created_at', '>=', now()->subMonths(12))
-            ->groupByRaw("DATE_FORMAT(created_at, '%Y-%m')")
-            ->orderBy('month')
+            ->whereNotNull('desired_date')
+            ->whereDate('desired_date', '<', now()->toDateString())
+            ->whereHas('status', fn($q) => $q->where('is_final', false))
+            ->orderBy('desired_date')
+            ->limit(15)
             ->get();
 
-        return view('reports.index', compact('aRequestsByStatus', 'aMonthlyStats'));
+        // --- Charge par développeur : tâches actives + heures ---
+        $oActiveTasks = Task::with('assignedUser')
+            ->whereNull('deleted_at')
+            ->whereNotIn('status', ['done', 'cancelled'])
+            ->whereNotNull('assigned_to')
+            ->get();
+
+        $aLoadByDeveloper = $oActiveTasks
+            ->groupBy('assigned_to')
+            ->map(function ($oUserTasks) {
+                $oUser = $oUserTasks->first()->assignedUser;
+                if (!$oUser) {
+                    return null;
+                }
+                $oUser->active_tasks      = $oUserTasks->count();
+                $oUser->estimated_hours   = (float) $oUserTasks->sum('estimated_hours');
+                $oUser->total_hours       = (float) $oUserTasks->sum('actual_hours');
+                return $oUser;
+            })
+            ->filter()
+            ->sortByDesc('active_tasks')
+            ->values();
+
+        // --- Récapitulatif des demandes sur la période ---
+        $aRequestsSummary = RequestA4::with(['status', 'priority'])
+            ->whereNull('deleted_at')
+            ->whereDate('created_at', '>=', $sDateFrom)
+            ->whereDate('created_at', '<=', $sDateTo)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $aStats = ['total' => $iTotalRequests];
+
+        return view('reports.index', compact(
+            'aByStatus', 'aStats', 'aOverdue', 'aLoadByDeveloper',
+            'aRequestsSummary', 'sDateFrom', 'sDateTo'
+        ));
     }
 
     /**
