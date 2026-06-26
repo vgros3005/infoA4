@@ -24,7 +24,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
                             <div class="rounded-circle" style="width: 16px; height: 16px; background-color: var(--bs-{{ $oStatus->color ?? 'secondary' }});"></div>
-                            <h5 class="mb-0 fw-bold">{{ $oStatus->name }}</h5>
+                            <h5 class="mb-0 fw-bold">
+                                {{ $oStatus->translated_label }}
+                                <small class="text-muted fw-normal fs-6">({{ $oStatus->name }})</small>
+                            </h5>
                             <span class="badge bg-light text-dark border">{{ __('Ordre') }} {{ $oStatus->sort_order ?? '—' }}</span>
                             @if($oStatus->is_final ?? false)
                                 <span class="badge bg-success">{{ __('Statut final') }}</span>
