@@ -42,8 +42,7 @@ class StoreRequestA4Request extends FormRequest
             'company_ids.*'          => ['integer', 'exists:companies,id'],
             'software_ids'           => ['nullable', 'array'],
             'software_ids.*'         => ['integer', 'exists:softwares,id'],
-            'requested_date'         => ['required', 'date'],
-            'desired_date'           => ['nullable', 'date', 'after:requested_date'],
+            'desired_date'           => ['nullable', 'date'],
             'estimated_hours'        => ['nullable', 'numeric', 'min:0'],
             'attachments'            => ['nullable', 'array'],
             'attachments.*'          => ['file', 'max:10240'], // 10 MB per file

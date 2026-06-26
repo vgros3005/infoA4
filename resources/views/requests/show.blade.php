@@ -75,8 +75,8 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="tab-history" data-bs-toggle="tab" data-bs-target="#pane-history"
                 type="button" role="tab">
-            <i class="bi bi-clock-history me-1"></i>{{ __('Historique') }}
-            <span class="badge bg-secondary ms-1">{{ count($aStatusHistory) }}</span>
+            <i class="bi bi-journal-text me-1"></i>{{ __('Journal') }}
+            <span class="badge bg-secondary ms-1">{{ $aActivityJournal->count() }}</span>
         </button>
     </li>
     <li class="nav-item" role="presentation">
@@ -196,46 +196,51 @@
         </div>
     </div>
 
-    {{-- Tab Historique --}}
+    {{-- Tab Journal d'activité --}}
     <div class="tab-pane fade" id="pane-history" role="tabpanel">
         <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                @forelse($aStatusHistory as $oHistory)
-                    <div class="d-flex mb-3">
+            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-journal-text me-2"></i>{{ __('Journal d\'activité') }}
+                </h6>
+                <small class="text-muted">{{ $aActivityJournal->count() }} {{ __('événement(s)') }}</small>
+            </div>
+            <div class="card-body pt-0">
+                @forelse($aActivityJournal as $aEntry)
+                    @php
+                        $sContextBadge = match($aEntry['context']) {
+                            'task'       => '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary-subtle ms-1">' . __('Tâche') . '</span>',
+                            'time_entry' => '<span class="badge bg-warning bg-opacity-25 text-warning-emphasis border border-warning-subtle ms-1">' . __('Temps') . '</span>',
+                            default      => '',
+                        };
+                    @endphp
+                    <div class="d-flex mb-0 py-3 {{ !$loop->last ? 'border-bottom' : '' }}">
+                        {{-- Icône --}}
                         <div class="flex-shrink-0 me-3">
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width: 36px; height: 36px; background-color: rgba(var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }}-rgb), 0.12); border: 2px solid var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }});">
-                                <i class="bi bi-arrow-right small" style="color: var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }});"></i>
+                                 style="width: 36px; height: 36px; background-color: var(--bs-{{ $aEntry['color'] }}-bg-subtle, rgba(0,0,0,.05)); border: 2px solid var(--bs-{{ $aEntry['color'] }}, #6c757d);">
+                                <i class="bi {{ $aEntry['icon'] }} small" style="color: var(--bs-{{ $aEntry['color'] }}, #6c757d);"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-start">
+                        {{-- Contenu --}}
+                        <div class="flex-grow-1 min-width-0">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
                                 <div>
-                                    <span class="fw-medium small">{{ $oHistory->user->full_name ?? '—' }}</span>
-                                    <span class="text-muted small mx-2">→</span>
-                                    <span class="badge" style="background-color: var(--bs-{{ $oHistory->newStatus->color ?? 'secondary' }})">
-                                        {{ $oHistory->newStatus->translated_label ?? '—' }}
-                                    </span>
-                                    @if($oHistory->oldStatus)
-                                        <span class="text-muted small ms-2">
-                                            ({{ __('ui.from_status') }} {{ $oHistory->oldStatus->translated_label }})
-                                        </span>
-                                    @endif
+                                    <span class="fw-medium small">{{ $aEntry['user']->full_name ?? __('Système') }}</span>
+                                    {!! $sContextBadge !!}
+                                    <p class="mb-0 small text-body-secondary mt-1">{{ $aEntry['description'] }}</p>
                                 </div>
-                                <small class="text-muted text-nowrap ms-2">
-                                    {{ $oHistory->created_at->format('d/m/Y H:i') }}
+                                <small class="text-muted text-nowrap">
+                                    {{ \Carbon\Carbon::parse($aEntry['date'])->format('d/m/Y H:i') }}
                                 </small>
                             </div>
-                            @if($oHistory->comment)
-                                <p class="text-muted small mt-1 mb-0 fst-italic">"{{ $oHistory->comment }}"</p>
-                            @endif
                         </div>
                     </div>
-                    @if(!$loop->last)
-                        <hr class="my-2 ms-5">
-                    @endif
                 @empty
-                    <p class="text-muted text-center py-4">{{ __('Aucun historique disponible') }}</p>
+                    <p class="text-muted text-center py-4">
+                        <i class="bi bi-journal-x d-block fs-3 mb-2"></i>
+                        {{ __('Aucune activité enregistrée') }}
+                    </p>
                 @endforelse
             </div>
         </div>

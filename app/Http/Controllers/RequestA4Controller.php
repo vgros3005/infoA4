@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRequestA4Request;
 use App\Http\Requests\UpdateRequestA4Request;
+use App\Models\ActivityLog;
 use App\Models\Company;
 use App\Models\Priority;
 use App\Models\RequestA4;
@@ -11,6 +12,8 @@ use App\Models\RequestType;
 use App\Models\Software;
 use App\Models\Status;
 use App\Models\StatusAction;
+use App\Models\Task;
+use App\Models\TaskTimeEntry;
 use App\Models\Team;
 use App\Services\ActivityLogService;
 use App\Services\PdfService;
@@ -118,8 +121,9 @@ class RequestA4Controller extends Controller
         $aSoftwareIds = $aValidated['software_ids'] ?? [];
         unset($aValidated['company_ids'], $aValidated['software_ids']);
 
-        // Set requester and initial status
-        $aValidated['requester_id'] = Auth::id();
+        // Set requester, submission date and initial status
+        $aValidated['requester_id']   = Auth::id();
+        $aValidated['requested_date'] = now()->toDateString();
 
         if (empty($aValidated['status_id'])) {
             $oInitialStatus = Status::where('is_initial', true)->first();
@@ -187,13 +191,49 @@ class RequestA4Controller extends Controller
         $this->authorize('view', $oRequestA4);
 
         /** @var \App\Models\User $oCurrentUser */
-        $oCurrentUser    = Auth::user();
+        $oCurrentUser      = Auth::user();
         $aAvailableActions = $oRequestA4->getAvailableActionsForUser($oCurrentUser);
-        $aStatusHistory    = $oRequestA4->statusHistories()->with(['fromStatus', 'toStatus', 'user'])
-            ->orderByDesc('created_at')->get();
+
+        // --- Unified activity journal ---
+        // 1. Logs directly on the RequestA4
+        $aLogsRequest = ActivityLog::with('user')
+            ->where('loggable_type', RequestA4::class)
+            ->where('loggable_id', $oRequestA4->id)
+            ->get()
+            ->map(fn($oLog) => $this->normalizeLog($oLog, 'request'));
+
+        // 2. Logs on Tasks belonging to this request
+        $aTaskIds = $oRequestA4->tasks->pluck('id');
+        $aLogsTasks = collect();
+        $aLogsTimeEntries = collect();
+
+        if ($aTaskIds->isNotEmpty()) {
+            $aLogsTasks = ActivityLog::with('user')
+                ->where('loggable_type', Task::class)
+                ->whereIn('loggable_id', $aTaskIds)
+                ->get()
+                ->map(fn($oLog) => $this->normalizeLog($oLog, 'task'));
+
+            // 3. Logs on TaskTimeEntries for those tasks
+            $aTimeEntryIds = TaskTimeEntry::whereIn('task_id', $aTaskIds)->pluck('id');
+            if ($aTimeEntryIds->isNotEmpty()) {
+                $aLogsTimeEntries = ActivityLog::with('user')
+                    ->where('loggable_type', TaskTimeEntry::class)
+                    ->whereIn('loggable_id', $aTimeEntryIds)
+                    ->get()
+                    ->map(fn($oLog) => $this->normalizeLog($oLog, 'time_entry'));
+            }
+        }
+
+        $aActivityJournal = $aLogsRequest
+            ->merge($aLogsTasks)
+            ->merge($aLogsTimeEntries)
+            ->sortByDesc('date')
+            ->values();
+
         $oRequest = $oRequestA4; // alias used by the view
 
-        return view('requests.show', compact('oRequest', 'aAvailableActions', 'aStatusHistory'));
+        return view('requests.show', compact('oRequest', 'aAvailableActions', 'aActivityJournal'));
     }
 
     /**
@@ -237,7 +277,7 @@ class RequestA4Controller extends Controller
 
         $aCompanyIds  = $aValidated['company_ids']  ?? [];
         $aSoftwareIds = $aValidated['software_ids'] ?? [];
-        unset($aValidated['company_ids'], $aValidated['software_ids']);
+        unset($aValidated['company_ids'], $aValidated['software_ids'], $aValidated['requested_date']);
 
         $oRequestA4->update($aValidated);
         $oRequestA4->companies()->sync($aCompanyIds);
@@ -357,5 +397,53 @@ class RequestA4Controller extends Controller
         return redirect()
             ->route('requests.show', $oRequestA4->id)
             ->with('success', __('messages.action_executed', ['action' => $oAction->action_label]));
+    }
+
+    /**
+     * Normalize an ActivityLog entry into a flat array for the unified journal timeline.
+     *
+     * @param  \App\Models\ActivityLog  $oLog
+     * @param  string                   $sContext  'request' | 'task' | 'time_entry'
+     * @return array
+     */
+    private function normalizeLog(ActivityLog $oLog, string $sContext): array
+    {
+        $sIcon    = match ($oLog->action) {
+            'created'        => 'bi-plus-circle',
+            'updated'        => 'bi-pencil',
+            'deleted'        => 'bi-trash',
+            'status_changed' => 'bi-arrow-right-circle',
+            'pdf_generated'  => 'bi-file-pdf',
+            default          => 'bi-activity',
+        };
+
+        $sColor = match ($oLog->action) {
+            'created'        => 'success',
+            'updated'        => 'info',
+            'deleted'        => 'danger',
+            'status_changed' => 'primary',
+            'pdf_generated'  => 'danger',
+            default          => 'secondary',
+        };
+
+        if ($sContext === 'time_entry') {
+            $sIcon  = 'bi-clock';
+            $sColor = 'warning';
+        } elseif ($sContext === 'task') {
+            $sIcon  = ($oLog->action === 'created') ? 'bi-plus-square' : (($oLog->action === 'deleted') ? 'bi-dash-square' : 'bi-pencil-square');
+            $sColor = ($oLog->action === 'deleted') ? 'danger' : 'secondary';
+        }
+
+        return [
+            'date'        => $oLog->created_at,
+            'user'        => $oLog->user,
+            'action'      => $oLog->action,
+            'context'     => $sContext,
+            'description' => $oLog->description,
+            'old_values'  => $oLog->old_values,
+            'new_values'  => $oLog->new_values,
+            'icon'        => $sIcon,
+            'color'       => $sColor,
+        ];
     }
 }

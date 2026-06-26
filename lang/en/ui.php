@@ -70,6 +70,7 @@ return [
     'status'                 => 'Status',
     'requester'              => 'Requester',
     'requested_date'         => 'Request Date',
+    'requested_date_auto'    => 'Automatically set to the submission date.',
     'desired_date'           => 'Desired Date',
     'planned_date'           => 'Planned Date',
     'completed_date'         => 'Completion Date',

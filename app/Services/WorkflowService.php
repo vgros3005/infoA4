@@ -69,11 +69,16 @@ class WorkflowService
             $iOldStatusId = $oRequest->status_id;
             $iNewStatusId = $oAction->target_status_id;
 
-            // 1. Update the request status
+            // 1. Load statuses for labels used in the activity log
+            $oOldStatus    = \App\Models\Status::find($iOldStatusId);
+            $sOldStatusLabel = $oOldStatus?->name ?? "#{$iOldStatusId}";
+
+            // 2. Update the request status
             $oRequest->status_id = $iNewStatusId;
 
-            // 2. Load the target status to check flags
+            // 3. Load the target status to check flags
             $oTargetStatus = $oAction->targetStatus()->firstOrFail();
+            $sNewStatusLabel = $oTargetStatus->name ?? "#{$iNewStatusId}";
 
             // 3. Freeze the request if required by the new status
             if ($oTargetStatus->freezes_request) {
@@ -105,7 +110,7 @@ class WorkflowService
             // 6. Log the activity
             $this->oActivityLogService->log(
                 'status_changed',
-                "Statut changé de #{$iOldStatusId} vers #{$iNewStatusId} via l'action \"{$oAction->action_label}\"",
+                "Statut changé de \"{$sOldStatusLabel}\" vers \"{$sNewStatusLabel}\" via l'action \"{$oAction->action_label}\"",
                 $oRequest,
                 ['status_id' => $iOldStatusId],
                 ['status_id' => $iNewStatusId, 'is_frozen' => $oRequest->is_frozen]

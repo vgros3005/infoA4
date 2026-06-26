@@ -25,7 +25,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <div class="rounded-circle" style="width: 16px; height: 16px; background-color: var(--bs-{{ $oStatus->color ?? 'secondary' }});"></div>
                             <h5 class="mb-0 fw-bold">{{ $oStatus->name }}</h5>
-                            <span class="badge bg-light text-dark border">{{ __('Ordre') }} {{ $oStatus->order ?? '—' }}</span>
+                            <span class="badge bg-light text-dark border">{{ __('Ordre') }} {{ $oStatus->sort_order ?? '—' }}</span>
                             @if($oStatus->is_final ?? false)
                                 <span class="badge bg-success">{{ __('Statut final') }}</span>
                             @endif
@@ -42,7 +42,7 @@
                                     data-status-id="{{ $oStatus->id }}"
                                     data-status-name="{{ $oStatus->name }}"
                                     data-status-color="{{ $oStatus->color }}"
-                                    data-status-order="{{ $oStatus->order }}"
+                                    data-status-sort-order="{{ $oStatus->sort_order }}"
                                     data-status-is-final="{{ $oStatus->is_final ? '1' : '0' }}"
                                     data-status-is-locked="{{ $oStatus->is_locked ? '1' : '0' }}">
                                 <i class="bi bi-pencil me-1"></i>{{ __('Modifier') }}
@@ -168,7 +168,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="statusOrder" class="form-label fw-medium">{{ __('Ordre') }}</label>
-                            <input type="number" id="statusOrder" name="order" class="form-control" min="0" value="0">
+                            <input type="number" id="statusOrder" name="sort_order" class="form-control" min="0" value="0">
                         </div>
                     </div>
                     <div class="mt-3 d-flex gap-3">
@@ -279,7 +279,7 @@
                 document.getElementById('statusMethod').value = 'PUT';
                 document.getElementById('statusName').value = elTrigger.dataset.statusName;
                 document.getElementById('statusColor').value = elTrigger.dataset.statusColor || '#0d6efd';
-                document.getElementById('statusOrder').value = elTrigger.dataset.statusOrder || 0;
+                document.getElementById('statusOrder').value = elTrigger.dataset.statusSortOrder || 0;
                 document.getElementById('statusIsFinal').checked = elTrigger.dataset.statusIsFinal === '1';
                 document.getElementById('statusIsLocked').checked = elTrigger.dataset.statusIsLocked === '1';
             } else {

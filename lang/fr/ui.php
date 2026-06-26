@@ -70,6 +70,7 @@ return [
     'status'                 => 'Statut',
     'requester'              => 'Demandeur',
     'requested_date'         => 'Date de demande',
+    'requested_date_auto'    => 'Initialisée automatiquement à la date de soumission.',
     'desired_date'           => 'Date souhaitée',
     'planned_date'           => 'Date planifiée',
     'completed_date'         => 'Date de clôture',

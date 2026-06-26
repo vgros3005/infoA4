@@ -228,15 +228,9 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="requested_date" class="form-label fw-medium">
-                            {{ __('Date de demande') }} <span class="text-danger">*</span>
-                        </label>
-                        <input type="date" id="requested_date" name="requested_date"
-                               class="form-control @error('requested_date') is-invalid @enderror"
-                               value="{{ old('requested_date', $oRequest->requested_date?->format('Y-m-d')) }}" required>
-                        @error('requested_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <label class="form-label fw-medium">{{ __('Date de demande') }}</label>
+                        <p class="form-control-plaintext">{{ $oRequest->requested_date?->format('d/m/Y') ?? '—' }}</p>
+                        <small class="text-muted">{{ __('ui.requested_date_auto') }}</small>
                     </div>
                     <div class="mb-0">
                         <label for="desired_date" class="form-label fw-medium">{{ __('Date souhaitée') }}</label>
