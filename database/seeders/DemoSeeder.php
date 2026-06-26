@@ -26,7 +26,7 @@ class DemoSeeder extends Seeder
         $this->seedCompanies();
         $this->seedSoftwares();
         $this->seedTeamsAndUsers();
-        $this->seedRequestsA4();
+        //$this->seedRequestsA4();
     }
 
     private function seedCompanies(): void
@@ -60,22 +60,22 @@ class DemoSeeder extends Seeder
     private function seedTeamsAndUsers(): void
     {
         $oAdmin = User::updateOrCreate(
-            ['email' => 'admin@infoa4.local'],
+            ['email' => 'vincent.gros@def-online.com'],
             [
-                'name'       => 'Administrateur',
-                'first_name' => 'Admin',
-                'last_name'  => 'Système',
+                'name'       => 'GROS Vincent',
+                'first_name' => 'Vincent',
+                'last_name'  => 'GROS',
                 'password'   => Hash::make('password'),
                 'is_active'  => true,
             ]
         );
 
         $oUsersData = [
-            ['email' => 'chef.projet@infoa4.local', 'first_name' => 'Marie', 'last_name' => 'Martin', 'name' => 'Marie Martin'],
-            ['email' => 'dev1@infoa4.local', 'first_name' => 'Pierre', 'last_name' => 'Dupont', 'name' => 'Pierre Dupont'],
-            ['email' => 'dev2@infoa4.local', 'first_name' => 'Sophie', 'last_name' => 'Bernard', 'name' => 'Sophie Bernard'],
-            ['email' => 'testeur@infoa4.local', 'first_name' => 'Lucas', 'last_name' => 'Petit', 'name' => 'Lucas Petit'],
-            ['email' => 'demandeur@infoa4.local', 'first_name' => 'Julie', 'last_name' => 'Moreau', 'name' => 'Julie Moreau'],
+            ['email' => 'stephanie.louvet@def-online.com', 'first_name' => 'Stéphanie', 'last_name' => 'LOUVET', 'name' => 'LOUVET Stéphanie'],
+            ['email' => 'aurianne.gueraud@def-online.com', 'first_name' => 'Aurianne', 'last_name' => 'GUERAUD', 'name' => 'GUERRAUD Aurianne'],
+            ['email' => 'alexandre.philippon@def-online.com', 'first_name' => 'Alexandre', 'last_name' => 'PHILIPPON', 'name' => 'PHILIPPON Alexandre'],
+            ['email' => 'mustapha.karim@def-online.com', 'first_name' => 'Mustapha', 'last_name' => 'KARIM', 'name' => 'KARIM Mustapha'],
+            ['email' => 'hugo.dorlac@def-online.com', 'first_name' => 'Hugo', 'last_name' => 'DORLAC', 'name' => 'DORLAC Hugo'],
         ];
 
         $aUsers = [$oAdmin];
@@ -87,8 +87,9 @@ class DemoSeeder extends Seeder
         }
 
         $oTeamDev  = Team::updateOrCreate(['name' => 'Équipe Développement IFS'], ['color' => 'primary', 'description' => 'Équipe de développement IFS']);
-        $oTeamTest = Team::updateOrCreate(['name' => 'Équipe QA / Tests'], ['color' => 'warning', 'description' => 'Équipe assurance qualité']);
-        $oTeamMOA  = Team::updateOrCreate(['name' => 'MOA / Métier'], ['color' => 'success', 'description' => 'Maîtrise d\'ouvrage']);
+        $oTeamTest = Team::updateOrCreate(['name' => 'Équipe Développement Navision'], ['color' => 'warning', 'description' => 'Équipe de développement  Navision']);
+        $oTeamMOA  = Team::updateOrCreate(['name' => 'Équipe Projet Base Installée'], ['color' => 'success', 'description' => 'Chefs de projet MW']);
+        $oTeamMOA  = Team::updateOrCreate(['name' => 'Équipe Nouveaux Projets'], ['color' => 'blue', 'description' => 'Chefs de projet NW']);
 
         $oRoleAdmin = Role::where('name', 'admin')->first();
         $oRolePM    = Role::where('name', 'project_manager')->first();
@@ -102,8 +103,8 @@ class DemoSeeder extends Seeder
             [$oTeamDev, $aUsers[2], $oRoleDev],
             [$oTeamDev, $aUsers[3], $oRoleDev],
             [$oTeamTest, $aUsers[1], $oRolePM],
-            [$oTeamTest, $aUsers[4], $oRoleTester],
-            [$oTeamMOA, $aUsers[5], $oRoleReq],
+            [$oTeamTest, $aUsers[4], $oRoleDev],
+            [$oTeamMOA, $aUsers[5], $oRoleDev],
         ];
 
         foreach ($aMemberships as [$oTeam, $oUser, $oRole]) {
