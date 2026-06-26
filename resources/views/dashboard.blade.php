@@ -11,65 +11,77 @@
 {{-- Cartes statistiques --}}
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                    <div class="bg-primary bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-file-earmark-text text-primary fs-3"></i>
+        <a href="{{ route('requests.index') }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-file-earmark-text text-primary fs-3"></i>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <p class="text-muted small mb-0">{{ __('Total demandes') }}</p>
-                    <h3 class="mb-0 fw-bold">{{ $aStats['total'] ?? 0 }}</h3>
+                    <div>
+                        <p class="text-muted small mb-0">{{ __('Total demandes') }}</p>
+                        <h3 class="mb-0 fw-bold text-body">{{ $aStats['total'] ?? 0 }}</h3>
+                    </div>
+                    <i class="bi bi-arrow-right ms-auto text-muted small"></i>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                    <div class="bg-warning bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-hourglass-split text-warning fs-3"></i>
+        <a href="{{ route('requests.index', ['is_final' => 0]) }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-hourglass-split text-warning fs-3"></i>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <p class="text-muted small mb-0">{{ __('En cours') }}</p>
-                    <h3 class="mb-0 fw-bold">{{ $aStats['in_progress'] ?? 0 }}</h3>
+                    <div>
+                        <p class="text-muted small mb-0">{{ __('En cours') }}</p>
+                        <h3 class="mb-0 fw-bold text-body">{{ $aStats['in_progress'] ?? 0 }}</h3>
+                    </div>
+                    <i class="bi bi-arrow-right ms-auto text-muted small"></i>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                    <div class="bg-success bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-check-circle text-success fs-3"></i>
+        <a href="{{ route('requests.index', ['is_final' => 1]) }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-check-circle text-success fs-3"></i>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <p class="text-muted small mb-0">{{ __('Terminées') }}</p>
-                    <h3 class="mb-0 fw-bold">{{ $aStats['completed'] ?? 0 }}</h3>
+                    <div>
+                        <p class="text-muted small mb-0">{{ __('Terminées') }}</p>
+                        <h3 class="mb-0 fw-bold text-body">{{ $aStats['completed'] ?? 0 }}</h3>
+                    </div>
+                    <i class="bi bi-arrow-right ms-auto text-muted small"></i>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="flex-shrink-0 me-3">
-                    <div class="bg-info bg-opacity-10 rounded-3 p-3">
-                        <i class="bi bi-check2-square text-info fs-3"></i>
+        <a href="{{ route('tasks.index', ['assigned_to' => auth()->id()]) }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                            <i class="bi bi-check2-square text-info fs-3"></i>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <p class="text-muted small mb-0">{{ __('Tâches assignées') }}</p>
-                    <h3 class="mb-0 fw-bold">{{ $aStats['my_tasks'] ?? 0 }}</h3>
-                    <small class="text-muted">{{ number_format($nWeeklyHours ?? 0, 1) }}h {{ __('cette semaine') }}</small>
+                    <div>
+                        <p class="text-muted small mb-0">{{ __('Tâches assignées') }}</p>
+                        <h3 class="mb-0 fw-bold text-body">{{ $aStats['my_tasks'] ?? 0 }}</h3>
+                        <small class="text-muted">{{ number_format($nWeeklyHours ?? 0, 1) }}h {{ __('cette semaine') }}</small>
+                    </div>
+                    <i class="bi bi-arrow-right ms-auto text-muted small"></i>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
@@ -87,7 +99,8 @@
                     @php $nMax = $aStats['by_status']->max('requests_a4_count') ?: 1; @endphp
                     @foreach($aStats['by_status'] as $oStatus)
                         @php $nPct = round($oStatus->requests_a4_count / $nMax * 100); @endphp
-                        <div class="mb-3">
+                        <a href="{{ route('requests.index', ['status_id' => $oStatus->id]) }}"
+                           class="text-decoration-none text-body d-block mb-3 dashboard-status-row">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="small fw-medium">{{ $oStatus->translated_label }}</span>
                                 <span class="small text-muted">{{ $oStatus->requests_a4_count }}</span>
@@ -98,7 +111,7 @@
                                      aria-valuenow="{{ $nPct }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 @else
                     <p class="text-muted text-center py-4">{{ __('Aucune donnée disponible') }}</p>
@@ -219,3 +232,26 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+.dashboard-stat-card {
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.dashboard-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1) !important;
+}
+.dashboard-status-row {
+    cursor: pointer;
+    border-radius: .375rem;
+    padding: .25rem .5rem;
+    margin-left: -.5rem;
+    transition: background-color .15s ease;
+}
+.dashboard-status-row:hover {
+    background-color: rgba(0,0,0,.04);
+}
+</style>
+@endpush

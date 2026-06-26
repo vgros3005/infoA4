@@ -60,6 +60,12 @@ class RequestA4Controller extends Controller
             $oQuery->where('status_id', $iStatusId);
         }
 
+        // --- Status group filter (is_final=0 → en cours, is_final=1 → terminées) ---
+        if ($oHttpRequest->has('is_final')) {
+            $bIsFinal = (bool) $oHttpRequest->input('is_final');
+            $oQuery->whereHas('status', fn($q) => $q->where('is_final', $bIsFinal));
+        }
+
         // --- Type filter ---
         if ($iTypeId = $oHttpRequest->input('request_type_id')) {
             $oQuery->where('request_type_id', $iTypeId);
