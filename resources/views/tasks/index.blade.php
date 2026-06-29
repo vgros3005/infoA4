@@ -74,6 +74,30 @@
     </div>
 </div>
 
+{{-- Badges filtres actifs --}}
+@if(request('search') || request('assigned_to') || request('status') || request('request_a4_id'))
+<div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+    <span class="text-muted small"><i class="bi bi-funnel-fill me-1"></i>{{ __('Filtres actifs') }} :</span>
+    @if(request('assigned_to') && isset($aUsers))
+        @php $oActiveUser = $aUsers->firstWhere('id', request('assigned_to')); @endphp
+        @if($oActiveUser)
+            <span class="badge bg-info text-dark">
+                <i class="bi bi-person me-1"></i>{{ $oActiveUser->full_name }}
+            </span>
+        @endif
+    @endif
+    @if(request('search'))
+        <span class="badge bg-secondary">{{ __('Recherche') }} : {{ request('search') }}</span>
+    @endif
+    @if(request('status'))
+        <span class="badge bg-secondary">{{ __('task_status.' . request('status')) }}</span>
+    @endif
+    <a href="{{ route('tasks.index') }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+        <i class="bi bi-x me-1"></i>{{ __('Effacer tout') }}
+    </a>
+</div>
+@endif
+
 {{-- Tableau --}}
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">

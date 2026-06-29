@@ -77,7 +77,12 @@ class TaskController extends Controller
         // Pre-select a request if provided via query string
         $iPreselectedRequestId = (int) $oHttpRequest->input('request_a4_id');
 
-        return view('tasks.create', compact('aTaskTypes', 'aUsers', 'aRequests', 'iPreselectedRequestId'));
+        // All tasks available as potential dependencies
+        $aAllTasks = Task::whereNull('deleted_at')
+            ->orderBy('title')
+            ->get(['id', 'title', 'request_a4_id']);
+
+        return view('tasks.create', compact('aTaskTypes', 'aUsers', 'aRequests', 'iPreselectedRequestId', 'aAllTasks'));
     }
 
     /**

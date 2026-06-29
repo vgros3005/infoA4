@@ -196,6 +196,38 @@
                 </div>
             </div>
 
+            {{-- Dépendances --}}
+            @if(($aAllTasks ?? collect())->isNotEmpty())
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-diagram-2 me-2 text-secondary"></i>{{ __('Dépendances') }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted d-block mb-2">
+                        {{ __('Cette tâche ne peut démarrer qu\'après la fin des tâches cochées.') }}
+                    </small>
+                    <input type="text" class="form-control form-control-sm mb-2" id="depSearchCreate"
+                           placeholder="{{ __('Filtrer les tâches…') }}">
+                    <div class="border rounded" style="max-height: 180px; overflow-y: auto; padding: 0.5rem;">
+                        @foreach($aAllTasks as $oDep)
+                            <div class="form-check dep-item-create">
+                                <input class="form-check-input" type="checkbox"
+                                       name="dependency_ids[]"
+                                       value="{{ $oDep->id }}"
+                                       id="dep_c_{{ $oDep->id }}"
+                                       {{ in_array($oDep->id, (array) old('dependency_ids', [])) ? 'checked' : '' }}>
+                                <label class="form-check-label small" for="dep_c_{{ $oDep->id }}">
+                                    {{ $oDep->title }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Récurrence --}}
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-header bg-transparent border-0">
@@ -246,6 +278,18 @@
 @push('scripts')
 <script>
 (function () {
+    // Filtre de recherche dans la liste des dépendances
+    const elDepSearch = document.getElementById('depSearchCreate');
+    if (elDepSearch) {
+        elDepSearch.addEventListener('input', function () {
+            const sQuery = this.value.toLowerCase();
+            document.querySelectorAll('.dep-item-create').forEach(function (elItem) {
+                const sLabel = elItem.querySelector('label').textContent.toLowerCase();
+                elItem.style.display = sLabel.includes(sQuery) ? '' : 'none';
+            });
+        });
+    }
+
     // Slider avancement
     const elProgress = document.getElementById('progress');
     const elProgressValue = document.getElementById('progressValue');

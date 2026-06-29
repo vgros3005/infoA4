@@ -68,6 +68,14 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
+                    <label class="form-label small mb-1">{{ __('Avancement') }}</label>
+                    <select name="is_final" class="form-select form-select-sm">
+                        <option value="">{{ __('Tous') }}</option>
+                        <option value="0" {{ request('is_final') === '0' ? 'selected' : '' }}>{{ __('En cours') }}</option>
+                        <option value="1" {{ request('is_final') === '1' ? 'selected' : '' }}>{{ __('Terminées') }}</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
                     <label class="form-label small mb-1">{{ __('Période') }}</label>
                     <input type="month" name="period" class="form-control form-control-sm"
                            value="{{ request('period') }}">
@@ -84,6 +92,45 @@
         </form>
     </div>
 </div>
+
+{{-- Badges filtres actifs --}}
+@php
+    $aActiveFilters = array_filter([
+        'search'      => request('search'),
+        'status_id'   => request('status_id'),
+        'type_id'     => request('type_id'),
+        'priority_id' => request('priority_id'),
+        'period'      => request('period'),
+        'is_final'    => request()->has('is_final') ? (request('is_final') === '1' ? __('Terminées') : __('En cours')) : null,
+    ]);
+@endphp
+@if(!empty($aActiveFilters))
+<div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+    <span class="text-muted small"><i class="bi bi-funnel-fill me-1"></i>{{ __('Filtres actifs') }} :</span>
+    @if(request('search'))
+        <span class="badge bg-secondary">{{ __('Recherche') }} : {{ request('search') }}</span>
+    @endif
+    @if(request('status_id') && isset($aStatuses))
+        @php $oActiveStatus = $aStatuses->firstWhere('id', request('status_id')); @endphp
+        @if($oActiveStatus)
+            <span class="badge" style="background-color: var(--bs-{{ $oActiveStatus->color ?? 'secondary' }})">
+                {{ $oActiveStatus->translated_label }}
+            </span>
+        @endif
+    @endif
+    @if(request()->has('is_final'))
+        <span class="badge {{ request('is_final') === '1' ? 'bg-success' : 'bg-warning text-dark' }}">
+            {{ request('is_final') === '1' ? __('Terminées') : __('En cours') }}
+        </span>
+    @endif
+    @if(request('type_id') || request('priority_id') || request('period'))
+        <span class="badge bg-light text-dark border">{{ __('+ autres filtres') }}</span>
+    @endif
+    <a href="{{ route('requests.index') }}" class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2">
+        <i class="bi bi-x me-1"></i>{{ __('Effacer tout') }}
+    </a>
+</div>
+@endif
 
 {{-- Tableau --}}
 <div class="card border-0 shadow-sm">
