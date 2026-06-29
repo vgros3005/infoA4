@@ -171,11 +171,37 @@
 
                     <li class="nav-header">{{ strtoupper(__('ui.nav_reports')) }}</li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                    <li class="nav-item {{ request()->routeIs('reports.*') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-graph-up"></i>
-                            <p>{{ __('ui.reporting') }}</p>
+                            <p>{{ __('ui.reporting') }} <i class="nav-arrow bi bi-chevron-right"></i></p>
                         </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-bar-chart-line"></i>
+                                    <p>{{ __('Vue d\'ensemble') }}</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('reports.time-summary') }}" class="nav-link {{ request()->routeIs('reports.time-summary') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-clock-history"></i>
+                                    <p>{{ __('Récap. temps') }}</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('reports.time') }}" class="nav-link {{ request()->routeIs('reports.time') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-stopwatch"></i>
+                                    <p>{{ __('Détail des saisies') }}</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('reports.load') }}" class="nav-link {{ request()->routeIs('reports.load') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-person-lines-fill"></i>
+                                    <p>{{ __('Charge équipe') }}</p>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     @if(Auth::user()->isAdmin())

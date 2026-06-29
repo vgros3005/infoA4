@@ -6,7 +6,9 @@ use App\Models\RequestA4;
 use App\Models\Status;
 use App\Models\Task;
 use App\Models\TaskTimeEntry;
+use App\Models\Team;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -148,6 +150,125 @@ class ReportController extends Controller
         $oUsers = User::where('is_active', true)->orderBy('name')->get();
 
         return view('reports.load', compact('aTasksByUser', 'oUsers', 'sDateFrom', 'sDateTo'));
+    }
+
+    /**
+     * Time summary: yesterday, current week (per team/person), and by request/activity type.
+     *
+     * @param  \Illuminate\Http\Request  $oHttpRequest
+     * @return \Illuminate\View\View
+     */
+    public function timeSummary(Request $oHttpRequest): View
+    {
+        $this->authorize('viewAny', RequestA4::class);
+
+        // --- "Hier" = vendredi si on est lundi ---
+        $oToday = Carbon::today();
+        if ($oToday->dayOfWeek === Carbon::MONDAY) {
+            $dYesterday      = $oToday->copy()->previous(Carbon::FRIDAY);
+            $sYesterdayLabel = __('Vendredi') . ' ' . $dYesterday->translatedFormat('d F Y');
+        } else {
+            $dYesterday      = $oToday->copy()->subDay();
+            $sYesterdayLabel = __('Hier') . ' (' . $dYesterday->translatedFormat('l d F Y') . ')';
+        }
+
+        $dWeekStart = $oToday->copy()->startOfWeek(Carbon::MONDAY);
+        $dWeekEnd   = $oToday->copy();
+
+        // --- Fonction groupement équipe > personne ---
+        $fnGroupByTeamUser = function ($oEntries) {
+            // Group entries by team name (first team alphabetically), then by user
+            $aGrouped = [];
+            foreach ($oEntries as $oEntry) {
+                $oUser      = $oEntry->user;
+                $oFirstTeam = $oUser?->teams->sortBy('name')->first();
+                $sTeamKey   = $oFirstTeam?->name ?? __('Sans équipe');
+                $iTeamId    = $oFirstTeam?->id   ?? 0;
+                $iUserId    = $oUser?->id          ?? 0;
+
+                if (!isset($aGrouped[$sTeamKey])) {
+                    $aGrouped[$sTeamKey] = [
+                        'team_id'    => $iTeamId,
+                        'team_name'  => $sTeamKey,
+                        'team_total' => 0.0,
+                        'users'      => [],
+                    ];
+                }
+                if (!isset($aGrouped[$sTeamKey]['users'][$iUserId])) {
+                    $aGrouped[$sTeamKey]['users'][$iUserId] = [
+                        'user'        => $oUser,
+                        'total_hours' => 0.0,
+                    ];
+                }
+                $aGrouped[$sTeamKey]['users'][$iUserId]['total_hours'] += (float) $oEntry->hours;
+                $aGrouped[$sTeamKey]['team_total']                      += (float) $oEntry->hours;
+            }
+
+            // Sort: teams alphabetically, users by descending hours
+            ksort($aGrouped);
+            foreach ($aGrouped as &$aTeam) {
+                uasort($aTeam['users'], fn($a, $b) => $b['total_hours'] <=> $a['total_hours']);
+                $aTeam['users'] = array_values($aTeam['users']);
+            }
+            unset($aTeam);
+
+            return $aGrouped;
+        };
+
+        // --- Saisies d'hier ---
+        $aYesterdayRaw  = TaskTimeEntry::with(['user.teams', 'task.taskType', 'task.requestA4'])
+            ->whereDate('entry_date', $dYesterday)
+            ->orderBy('user_id')
+            ->get();
+        $nYesterdayTotal    = (float) $aYesterdayRaw->sum('hours');
+        $aYesterdayByTeam   = $fnGroupByTeamUser($aYesterdayRaw);
+
+        // --- Saisies de la semaine en cours ---
+        $aWeekRaw = TaskTimeEntry::with(['user.teams', 'task.taskType', 'task.requestA4'])
+            ->whereBetween('entry_date', [$dWeekStart->toDateString(), $dWeekEnd->toDateString()])
+            ->orderBy('user_id')
+            ->get();
+        $nWeekTotal    = (float) $aWeekRaw->sum('hours');
+        $aWeekByTeam   = $fnGroupByTeamUser($aWeekRaw);
+
+        // --- Par demande + type de tâche (semaine) ---
+        $aByRequest = $aWeekRaw
+            ->filter(fn(TaskTimeEntry $oEntry) => !is_null($oEntry->task?->requestA4))
+            ->groupBy(fn(TaskTimeEntry $oEntry) => $oEntry->task->requestA4->id)
+            ->map(function ($aRequestEntries) {
+                $oRequest    = $aRequestEntries->first()->task->requestA4;
+
+                $aByTaskType = $aRequestEntries
+                    ->groupBy(fn(TaskTimeEntry $oEntry) => $oEntry->task?->task_type_id ?? 0)
+                    ->map(function ($aTypeEntries) {
+                        $oType = $aTypeEntries->first()->task?->taskType;
+                        return [
+                            'task_type'   => $oType,
+                            'total_hours' => (float) $aTypeEntries->sum('hours'),
+                        ];
+                    })
+                    ->sortByDesc('total_hours')
+                    ->values();
+
+                return [
+                    'request'      => $oRequest,
+                    'total_hours'  => (float) $aRequestEntries->sum('hours'),
+                    'by_task_type' => $aByTaskType,
+                ];
+            })
+            ->sortByDesc('total_hours')
+            ->values();
+
+        // Entrées de la semaine sans demande associée
+        $nWeekNoRequestHours = (float) $aWeekRaw
+            ->filter(fn(TaskTimeEntry $oEntry) => is_null($oEntry->task?->requestA4))
+            ->sum('hours');
+
+        return view('reports.time_summary', compact(
+            'aYesterdayByTeam', 'nYesterdayTotal', 'sYesterdayLabel', 'dYesterday',
+            'aWeekByTeam',      'nWeekTotal',       'dWeekStart',      'dWeekEnd',
+            'aByRequest',       'nWeekNoRequestHours'
+        ));
     }
 
     /**

@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/',              [ReportController::class, 'index'])->name('index');
         Route::get('/time',          [ReportController::class, 'time'])->name('time');
+        Route::get('/time-summary',  [ReportController::class, 'timeSummary'])->name('time-summary');
         Route::get('/load',          [ReportController::class, 'load'])->name('load');
         Route::get('/export',        [ReportController::class, 'export'])->name('export');
     });
