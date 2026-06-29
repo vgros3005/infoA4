@@ -277,33 +277,44 @@
 
 tinymce.init({
     selector: '#content',
-    plugins: 'lists link image table code',
-    toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table | code',
+    plugins: 'lists link image table code fullscreen paste',
+    toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table | code fullscreen',
     base_url: '/tinymce',
-    height: 400,
+    height: 500,
     menubar: false,
     branding: false,
     resize: true,
-    content_style: 'body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }',
-    images_upload_handler: function (oBlobInfo, fnProgress) {
+    automatic_uploads: true,
+    paste_data_images: true,
+    images_reuse_filename: true,
+    file_picker_types: 'image',
+    content_style: 'body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; } img { max-width: 100%; height: auto; }',
+    images_upload_handler: function (oBlobInfo) {
         return new Promise(function (fnResolve, fnReject) {
             const sCsrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             const oFormData = new FormData();
-            oFormData.append('file', oBlobInfo.blob(), oBlobInfo.filename());
+            oFormData.append('file', oBlobInfo.blob(), oBlobInfo.filename() || 'image.png');
             fetch('/tinymce/upload', {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': sCsrf },
                 body: oFormData,
             })
             .then(function (oResponse) {
-                if (!oResponse.ok) { fnReject('HTTP ' + oResponse.status); return; }
+                if (!oResponse.ok) {
+                    oResponse.json().then(function (oErr) {
+                        fnReject({ message: oErr.message || 'HTTP ' + oResponse.status, remove: true });
+                    }).catch(function () {
+                        fnReject({ message: 'HTTP ' + oResponse.status, remove: true });
+                    });
+                    return;
+                }
                 return oResponse.json();
             })
             .then(function (oJson) {
                 if (oJson && oJson.location) { fnResolve(oJson.location); }
-                else { fnReject('Invalid server response'); }
+                else if (oJson) { fnReject({ message: 'Réponse serveur invalide', remove: true }); }
             })
-            .catch(function (oErr) { fnReject(oErr.message); });
+            .catch(function (oErr) { fnReject({ message: oErr.message, remove: true }); });
         });
     },
     setup: function (oEditor) {
