@@ -68,7 +68,7 @@ class StatusActionAdminController extends Controller
         $this->oActivityLogService->log('created', "Action de statut créée : {$oAction->action_name}", $oAction);
 
         return redirect()
-            ->route('admin.status-actions.index', $iStatusId)
+            ->route('admin.statuses.index')
             ->with('success', __('messages.status_action_created'));
     }
 
@@ -111,7 +111,7 @@ class StatusActionAdminController extends Controller
         $this->oActivityLogService->log('updated', "Action de statut mise à jour : {$oAction->action_name}", $oAction);
 
         return redirect()
-            ->route('admin.status-actions.index', $iStatusId)
+            ->route('admin.statuses.index')
             ->with('success', __('messages.status_action_updated'));
     }
 
@@ -124,7 +124,7 @@ class StatusActionAdminController extends Controller
         $this->oActivityLogService->log('deleted', "Action de statut supprimée : {$oAction->action_name}", $oAction);
 
         return redirect()
-            ->route('admin.status-actions.index', $iStatusId)
+            ->route('admin.statuses.index')
             ->with('success', __('messages.status_action_deleted'));
     }
 }
